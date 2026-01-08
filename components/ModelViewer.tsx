@@ -56,41 +56,49 @@ interface ModelViewerProps {
 export default function ModelViewer({ modelPath }: ModelViewerProps) {
   console.log('ModelViewer rendering with path:', modelPath);
 
+  // Detect mobile for performance optimization
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const shadowMapSize = isMobile ? 512 : 1024;
+
   return (
     <div className="w-full h-full">
       <Canvas
-        shadows
+        shadows={isMobile ? false : true}
         camera={{ position: [0, 1.5, 5], fov: 50 }}
         gl={{
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 2,
           alpha: true,
           premultipliedAlpha: false,
+          antialias: !isMobile,
+          powerPreference: 'high-performance',
         }}
         onCreated={(state) => {
           console.log('Canvas created');
           state.gl.setClearColor(0x000000, 0);
         }}
-        dpr={[1, 2]}
+        dpr={[1, isMobile ? 1.5 : 2]}
         style={{ background: 'transparent' }}
       >
         <ambientLight intensity={0.4} />
-        {/* Top-down lighting for shadows */}
-        <directionalLight
-          position={[0, 10, 0]}
-          intensity={1}
-          castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-          shadow-camera-far={50}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-          shadow-bias={-0.0001}
-          shadow-radius={50}
-          shadow-normalBias={1}
-        />
+        {/* Top-down lighting for shadows - disabled on mobile for performance */}
+        {!isMobile && (
+          <directionalLight
+            position={[0, 10, 0]}
+            intensity={1}
+            castShadow
+            shadow-mapSize-width={shadowMapSize}
+            shadow-mapSize-height={shadowMapSize}
+            shadow-camera-far={50}
+            shadow-camera-left={-10}
+            shadow-camera-right={10}
+            shadow-camera-top={10}
+            shadow-camera-bottom={-10}
+            shadow-bias={-0.0001}
+            shadow-radius={50}
+            shadow-normalBias={1}
+          />
+        )}
 
         <group>
           <Suspense fallback={null}>

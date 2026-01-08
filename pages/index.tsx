@@ -8,7 +8,8 @@ import ContactModal from '@/components/ContactModal';
 import { useGLTF } from '@react-three/drei';
 
 // Dynamic import to avoid SSR issues with WebGL
-const ModelViewer = dynamic(() => import('@/components/ModelViewer'), {
+// Use ModelViewerWithProgress for progress tracking
+const ModelViewer = dynamic(() => import('@/components/ModelViewerWithProgress'), {
   ssr: false,
   loading: () => <LoadingSpinner />,
 });
