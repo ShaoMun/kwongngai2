@@ -1,18 +1,10 @@
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import TabBar, { TabType } from '@/components/TabBar';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import ContactModal from '@/components/ContactModal';
 import { useGLTF } from '@react-three/drei';
-
-// Dynamic import to avoid SSR issues with WebGL
-// Use ModelViewerWithProgress for progress tracking
-const ModelViewer = dynamic(() => import('@/components/ModelViewerWithProgress'), {
-  ssr: false,
-  loading: () => <LoadingSpinner />,
-});
+import ModelViewerWithProgress from '@/components/ModelViewerWithProgress';
 
 // Model path mapping
 const MODEL_PATHS = {
@@ -57,8 +49,8 @@ export default function Home() {
       {/* Main Content - Full height 3D Viewer */}
       <main className="flex-1 flex items-center justify-center">
         <div className="relative w-full max-w-4xl h-full mx-auto px-4">
-          <Suspense fallback={<LoadingSpinner />}>
-            <ModelViewer modelPath={MODEL_PATHS[activeTab]} />
+          <Suspense fallback={null}>
+            <ModelViewerWithProgress modelPath={MODEL_PATHS[activeTab]} />
           </Suspense>
 
           {/* Contact Us Button */}
