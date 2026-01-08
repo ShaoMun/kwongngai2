@@ -31,7 +31,7 @@ function Model({ url }: ModelProps) {
   // Trophy needs to be smaller, lion and dragon stay the same size
   const isTrophy = url.includes('trophy');
   const scale = isTrophy ? 1.8 : 2.1;
-  const position: [number, number, number] = isTrophy ? [0, -1.5, 0] : [0, -2, 0];
+  const position: [number, number, number] = isTrophy ? [0, -1.57, 0] : [0, -2, 0];
 
   return (
     <group scale={scale} position={position}>

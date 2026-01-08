@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import TabBar, { TabType } from '@/components/TabBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ContactModal from '@/components/ContactModal';
 
 // Dynamic import to avoid SSR issues with WebGL
 const ModelViewer = dynamic(() => import('@/components/ModelViewer'), {
@@ -20,6 +21,7 @@ const MODEL_PATHS = {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('lion');
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const handleTabChange = (tab: TabType) => {
     if (tab !== activeTab) {
@@ -48,12 +50,22 @@ export default function Home() {
 
           {/* Contact Us Button */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <button className="flowing-border text-xl font-bold uppercase tracking-wider" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+            <button
+              onClick={() => setIsContactModalOpen(true)}
+              className="flowing-border text-xl font-bold uppercase tracking-wider"
+              style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+            >
               Contact Us
             </button>
           </div>
         </div>
       </main>
+
+      {/* Contact Modal */}
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
     </div>
   );
 }

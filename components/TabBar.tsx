@@ -24,10 +24,10 @@ export default function TabBar({ activeTab, onTabChange }: TabBarProps) {
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
             className={`
-              px-6 py-2 rounded-full text-sm font-medium transition-all duration-300
+              flex-1 min-w-[100px] px-6 py-2 rounded-full text-sm font-medium transition-all duration-300
               ${activeTab === tab.key
                 ? 'bg-white text-black shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
+                : 'text-black hover:bg-white/20'
               }
             `}
           >
