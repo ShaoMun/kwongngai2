@@ -69,16 +69,16 @@ export function getOptimalModelPath(baseModelName: string, capabilities?: Device
   // Use optimized models for mobile devices
   const qualityMap: Record<string, Record<string, string>> = {
     lion: {
-      mobile: '/lion-mobile.glb',  // 12MB - ultra-low 512px textures for mobile
+      mobile: '/lion-mobile.glb',  // 10MB - ultra-low 256px textures
       desktop: '/lion.glb',        // 13MB - full quality
     },
     dragon: {
-      mobile: '/dragon.glb',       // 13MB - only one version available
+      mobile: '/dragon.glb',       // 13MB - using original (too complex to optimize)
       desktop: '/dragon.glb',
     },
     trophy: {
-      mobile: '/trophy.glb',       // 8.5MB - only one version available
-      desktop: '/trophy.glb',
+      mobile: '/trophy-mobile.glb', // 1.5MB - ultra-low 256px textures (81% smaller!)
+      desktop: '/trophy.glb',       // 8.5MB - full quality
     },
   };
 
