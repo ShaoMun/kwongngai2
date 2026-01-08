@@ -30,15 +30,19 @@ function Model({ url }: ModelProps) {
     }
   }, [scene, setProgress]);
 
-  // Enable shadow casting on all meshes
+  // Skip shadow processing on mobile for speed
+  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 640;
+
   useEffect(() => {
-    scene.traverse((child: THREE.Object3D) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-  }, [scene]);
+    if (!isMobileDevice) {
+      scene.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [scene, isMobileDevice]);
 
   // Trophy needs to be smaller, lion and dragon stay the same size
   // On mobile, reduce scale further to fit better
@@ -121,12 +125,16 @@ interface ModelViewerWithProgressProps {
 export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [canShowCanvas, setCanShowCanvas] = useState(false);
 
   // Get optimal rendering settings based on device
   const settings = getOptimalRenderingSettings();
 
   useEffect(() => {
     setMounted(true);
+    // Delay canvas creation to prioritize loading
+    const timer = setTimeout(() => setCanShowCanvas(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) {
@@ -140,25 +148,30 @@ export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithPr
         {progress < 100 && <ProgressBar progress={progress} />}
 
         {/* Canvas with optimized settings */}
-        <Canvas
-          shadows={settings.shadows}
-          camera={{ position: [0, 1.5, 5], fov: 50 }}
-          gl={{
-            toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 2,
-            alpha: true,
-            premultipliedAlpha: false,
-            antialias: settings.antialias,
-            powerPreference: 'high-performance',
-          }}
-          onCreated={(state) => {
-            state.gl.setClearColor(0x000000, 0);
-          }}
-          dpr={[1, settings.pixelRatio]}
-          style={{ background: 'transparent' }}
-        >
-          <Scene modelPath={modelPath} />
-        </Canvas>
+        {canShowCanvas && (
+          <Canvas
+            shadows={settings.shadows}
+            camera={{ position: [0, 1.5, 5], fov: 50 }}
+            gl={{
+              toneMapping: THREE.ACESFilmicToneMapping,
+              toneMappingExposure: 2,
+              alpha: true,
+              premultipliedAlpha: false,
+              antialias: settings.antialias,
+              powerPreference: 'high-performance',
+              stencil: false, // Disable stencil buffer for mobile
+              depth: true, // Keep depth for 3D
+            }}
+            onCreated={(state) => {
+              state.gl.setClearColor(0x000000, 0);
+            }}
+            dpr={[1, settings.pixelRatio]}
+            style={{ background: 'transparent' }}
+            performance={{ min: 0.5 }} // Allow FPS to drop on mobile
+          >
+            <Scene modelPath={modelPath} />
+          </Canvas>
+        )}
       </div>
     </ProgressContext.Provider>
   );

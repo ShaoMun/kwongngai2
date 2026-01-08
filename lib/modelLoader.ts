@@ -69,23 +69,23 @@ export function getOptimalModelPath(baseModelName: string, capabilities?: Device
   // Use optimized models for mobile devices
   const qualityMap: Record<string, Record<string, string>> = {
     lion: {
-      low: '/lion-webp.glb',   // 11MB - optimized with WebP textures
-      high: '/lion.glb',       // 13MB - full quality
+      mobile: '/lion-mobile.glb',  // 12MB - ultra-low 512px textures for mobile
+      desktop: '/lion.glb',        // 13MB - full quality
     },
     dragon: {
-      low: '/dragon.glb',      // 13MB - only one version available
-      high: '/dragon.glb',
+      mobile: '/dragon.glb',       // 13MB - only one version available
+      desktop: '/dragon.glb',
     },
     trophy: {
-      low: '/trophy.glb',      // 8.5MB - only one version available
-      high: '/trophy.glb',
+      mobile: '/trophy.glb',       // 8.5MB - only one version available
+      desktop: '/trophy.glb',
     },
   };
 
-  // Use low quality for mobile or slow connections
-  const quality = (caps.isMobile || caps.isSlowConnection) ? 'low' : 'high';
+  // Mobile gets ultra-low quality, desktop gets full quality
+  const quality = caps.isMobile ? 'mobile' : 'desktop';
 
-  return qualityMap[baseModelName]?.[quality] || qualityMap[baseModelName]?.high || `/${baseModelName}.glb`;
+  return qualityMap[baseModelName]?.[quality] || qualityMap[baseModelName]?.desktop || `/${baseModelName}.glb`;
 }
 
 /**
@@ -102,11 +102,23 @@ export function shouldUseAggressiveOptimizations(): boolean {
 export function getOptimalRenderingSettings() {
   const caps = detectDeviceCapabilities();
 
+  // Ultra-aggressive settings for mobile
+  if (caps.isMobile) {
+    return {
+      shadows: false,
+      antialias: false,
+      pixelRatio: 1, // Force 1x on mobile for speed
+      enableShadows: false,
+      shadowMapSize: 256, // Minimal shadow map if needed
+    };
+  }
+
+  // Desktop settings
   return {
-    shadows: !caps.isMobile && !caps.isSlowConnection,
-    antialias: !caps.isMobile,
-    pixelRatio: caps.isMobile ? 1 : (typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1),
-    enableShadows: !caps.isMobile,
-    shadowMapSize: caps.isMobile ? 512 : 1024,
+    shadows: true,
+    antialias: true,
+    pixelRatio: typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1,
+    enableShadows: true,
+    shadowMapSize: 1024,
   };
 }
