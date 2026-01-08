@@ -26,6 +26,10 @@ export default function Home() {
 
   // Preload all models in background
   useEffect(() => {
+    // Preload Draco decoder first to avoid delay on first model load
+    useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
+    // Then preload all models
     Object.values(MODEL_PATHS).forEach(path => {
       useGLTF.preload(path);
     });

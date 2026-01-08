@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -18,14 +18,15 @@ function Model({ url }: ModelProps) {
   const { scene } = useGLTF(url) as GLTFResult;
   console.log('Model loaded:', url);
 
-  // Enable shadow casting on all meshes
-  useEffect(() => {
+  // Enable shadow casting on all meshes - memoized to run once
+  const processedScene = useMemo(() => {
     scene.traverse((child: THREE.Object3D) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
     });
+    return scene;
   }, [scene]);
 
   // Trophy needs to be smaller, lion and dragon stay the same size
@@ -43,7 +44,7 @@ function Model({ url }: ModelProps) {
         <shadowMaterial opacity={0.05} transparent />
       </mesh>
 
-      <primitive object={scene} dispose={null} />
+      <primitive object={processedScene} dispose={null} />
     </group>
   );
 }
