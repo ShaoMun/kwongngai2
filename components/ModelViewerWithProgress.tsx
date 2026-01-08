@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Suspense, useEffect, useState, useRef } from 'react';
+import { useProgress } from '@react-three/drei';
 import ModelViewer from '@/components/ModelViewer';
 import ProgressBar from '@/components/ProgressBar';
 
@@ -10,55 +9,47 @@ interface ModelViewerWithProgressProps {
   modelPath: string;
 }
 
+function ModelScene({ modelPath }: { modelPath: string }) {
+  return <ModelViewer modelPath={modelPath} />;
+}
+
 export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithProgressProps) {
-  const [progress, setProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const loadingManagerRef = useRef<THREE.LoadingManager | null>(null);
+  // Use drei's built-in progress hook
+  const { progress } = useProgress();
+  const [displayProgress, setDisplayProgress] = useState(0);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const loadStartTime = useRef(Date.now());
 
   useEffect(() => {
-    // Reset loading state when model path changes
-    setIsLoading(true);
-    setProgress(0);
-
-    // Create loading manager to track progress
-    const manager = new THREE.LoadingManager();
-
-    manager.onProgress = (url, loaded, total) => {
-      const percentage = (loaded / total) * 100;
-      // Scale progress: 0-80% for download, 80-100% for processing
-      setProgress(percentage * 0.8);
-    };
-
-    manager.onLoad = () => {
-      // Model loaded, now processing
-      setProgress(85);
-      setTimeout(() => setProgress(90), 100);
-      setTimeout(() => setProgress(95), 200);
-      setTimeout(() => {
-        setProgress(100);
-        setTimeout(() => setIsLoading(false), 300);
-      }, 400);
-    };
-
-    manager.onError = (url) => {
-      console.error('Error loading:', url);
-      setProgress(0);
-    };
-
-    loadingManagerRef.current = manager;
-
-    // Preload the model with progress tracking
-    const loader = new GLTFLoader(manager);
-    loader.load(modelPath);
-
-    return () => {
-      loadingManagerRef.current = null;
-    };
+    // Reset on model path change
+    loadStartTime.current = Date.now();
+    setIsFirstLoad(true);
+    setDisplayProgress(0);
   }, [modelPath]);
 
-  if (isLoading) {
-    return <ProgressBar progress={progress} />;
+  useEffect(() => {
+    if (isFirstLoad && progress > 0) {
+      setDisplayProgress(progress);
+
+      if (progress >= 100) {
+        // Add a small delay to show 100% before switching
+        setTimeout(() => {
+          setIsFirstLoad(false);
+        }, 500);
+      }
+    } else if (!isFirstLoad) {
+      setDisplayProgress(100);
+    }
+  }, [progress, isFirstLoad]);
+
+  // Show progress bar for first load or when model changes
+  if (isFirstLoad || displayProgress < 100) {
+    return <ProgressBar progress={displayProgress} />;
   }
 
-  return <ModelViewer modelPath={modelPath} />;
+  return (
+    <Suspense fallback={<ProgressBar progress={displayProgress} />}>
+      <ModelScene modelPath={modelPath} />
+    </Suspense>
+  );
 }
