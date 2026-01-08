@@ -35,8 +35,8 @@ export default function Home() {
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* Title below tab bar */}
-      <div className="absolute top-28 left-8 z-0">
-        <h1 className="text-8xl text-gray-900 uppercase" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+      <div className="absolute top-28 left-8 z-0 max-w-[90%] sm:max-w-[100%] md:max-w-[100%]">
+        <h1 className="text-6xl sm:text-7xl md:text-8xl text-gray-900 uppercase break-words leading-tight" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
           {activeTab === 'winnings' ? 'WINNINGS' : activeTab.toUpperCase()}
         </h1>
       </div>
@@ -52,8 +52,11 @@ export default function Home() {
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <button
               onClick={() => setIsContactModalOpen(true)}
-              className="flowing-border text-xl font-bold uppercase tracking-wider"
-              style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+              className="bg-black text-white text-base sm:text-lg md:text-xl font-bold uppercase tracking-wider px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:bg-gray-800 transition-all relative"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                animation: 'rainbowGlow 3s ease-in-out infinite'
+              }}
             >
               Contact Us
             </button>

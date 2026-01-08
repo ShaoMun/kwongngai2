@@ -29,8 +29,10 @@ function Model({ url }: ModelProps) {
   }, [scene]);
 
   // Trophy needs to be smaller, lion and dragon stay the same size
+  // On mobile, reduce scale further to fit better
   const isTrophy = url.includes('trophy');
-  const scale = isTrophy ? 1.8 : 2.1;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const scale = isTrophy ? (isMobile ? 1.6 : 1.8) : (isMobile ? 1.75 : 2.1);
   const position: [number, number, number] = isTrophy ? [0, -1.57, 0] : [0, -2, 0];
 
   return (
@@ -102,7 +104,7 @@ export default function ModelViewer({ modelPath }: ModelViewerProps) {
         />
 
         <OrbitControls
-          enableZoom={true}
+          enableZoom={false}
           enablePan={false}
           minDistance={3}
           maxDistance={10}
