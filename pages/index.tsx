@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import TabBar, { TabType } from '@/components/TabBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ContactModal from '@/components/ContactModal';
+import { useGLTF } from '@react-three/drei';
 
 // Dynamic import to avoid SSR issues with WebGL
 const ModelViewer = dynamic(() => import('@/components/ModelViewer'), {
@@ -22,6 +23,13 @@ const MODEL_PATHS = {
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('lion');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  // Preload all models in background
+  useEffect(() => {
+    Object.values(MODEL_PATHS).forEach(path => {
+      useGLTF.preload(path);
+    });
+  }, []);
 
   const handleTabChange = (tab: TabType) => {
     if (tab !== activeTab) {
