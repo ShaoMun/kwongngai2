@@ -16,7 +16,7 @@ const ModelViewer = dynamic(() => import('@/components/ModelViewer'), {
 const MODEL_PATHS = {
   lion: '/lion.glb',
   dragon: '/dragon.glb',
-  achievement: '/trophy.glb',
+  winnings: '/trophy.glb',
 };
 
 export default function Home() {
@@ -35,9 +35,9 @@ export default function Home() {
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* Title below tab bar */}
-      <div className="absolute top-24 left-8 z-10">
-        <h1 className="text-6xl text-gray-900 uppercase" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
-          {activeTab === 'achievement' ? 'ACHIEVEMENT' : activeTab.toUpperCase()}
+      <div className="absolute top-28 left-8 z-0">
+        <h1 className="text-8xl text-gray-900 uppercase" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+          {activeTab === 'winnings' ? 'WINNINGS' : activeTab.toUpperCase()}
         </h1>
       </div>
 

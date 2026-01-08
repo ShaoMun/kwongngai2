@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export type TabType = 'lion' | 'dragon' | 'achievement';
+export type TabType = 'lion' | 'dragon' | 'winnings';
 
 interface TabBarProps {
   activeTab: TabType;
@@ -13,7 +13,7 @@ export default function TabBar({ activeTab, onTabChange }: TabBarProps) {
   const tabs: { key: TabType; label: string }[] = [
     { key: 'lion', label: 'Lion' },
     { key: 'dragon', label: 'Dragon' },
-    { key: 'achievement', label: 'Achievement' },
+    { key: 'winnings', label: 'Winnings' },
   ];
 
   return (
