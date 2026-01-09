@@ -280,39 +280,41 @@ export default function WinningsPage() {
         </h2>
 
         {/* Page Navigation */}
-        <div className="flex gap-4 mb-8 relative z-10 flex-wrap justify-center">
+        <div className="flex gap-4 mb-8 relative z-10 flex-wrap justify-center items-center">
+          {/* Left Arrow - hidden but maintains layout on page 1 */}
           <button
-            onClick={() => handlePageChange(1)}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-              currentPage === 1
-                ? 'bg-white text-black border-2 border-black'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-            }`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={`px-4 py-2 rounded-lg font-semibold transition-opacity duration-300 ease-in-out bg-white text-black border-2 border-black hover:bg-gray-200 ${currentPage === 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             style={{ fontFamily: "'Inter', sans-serif" }}
+            disabled={currentPage === 1}
           >
-            Page 1
+            ←
           </button>
+
+          {/* Page Number Buttons */}
+          {[1, 2, 3].map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                currentPage === page
+                  ? 'bg-black text-white border-2 border-black'
+                  : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+              }`}
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Right Arrow - hidden but maintains layout on page 3 */}
           <button
-            onClick={() => handlePageChange(2)}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-              currentPage === 2
-                ? 'bg-white text-black border-2 border-black'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-            }`}
+            onClick={() => handlePageChange(currentPage + 1)}
+            className={`px-4 py-2 rounded-lg font-semibold transition-opacity duration-300 ease-in-out bg-white text-black border-2 border-black hover:bg-gray-200 ${currentPage === 3 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             style={{ fontFamily: "'Inter', sans-serif" }}
+            disabled={currentPage === 3}
           >
-            Page 2
-          </button>
-          <button
-            onClick={() => handlePageChange(3)}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-              currentPage === 3
-                ? 'bg-white text-black border-2 border-black'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-            }`}
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
-            Page 3
+            →
           </button>
         </div>
 

@@ -124,7 +124,7 @@ export default function LionPage() {
         <meta name="description" content="Gallery showcasing the magnificent lion dance performances" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center p-4 sm:p-8 relative">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center relative">
         <button onClick={handleBack} className="fixed top-4 left-4 z-[100] bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>
           ← Back
         </button>
@@ -136,6 +136,15 @@ export default function LionPage() {
         <main className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl">
           <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
             <div ref={carouselRef} className="relative w-full aspect-[3/4] md:aspect-[16/9] select-none overflow-hidden lg:overflow-visible" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
+            {/* Left Arrow */}
+            <button onClick={goToPrev} className="absolute left-2 top-1/2 -translate-y-1/2 z-[50] bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all hover:scale-110 md:-translate-x-2 md:left-0 md:p-4" aria-label="Previous">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>
+
+            {/* Right Arrow */}
+            <button onClick={goToNext} className="absolute right-2 top-1/2 -translate-y-1/2 z-[50] bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all hover:scale-110 md:translate-x-2 md:right-0 md:p-4" aria-label="Next">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </button>
             {/* Far Previous (i-2) - Appears when dragging left */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: Math.max(0, Math.min(0.35, -dragProgress - 0.3)), transform: `translateX(${dragProgress * 50 - 150}%) scale(0.45)`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 0 }}>
                 <div className="relative w-[65%] h-[65%] max-w-[750px] rounded-2xl overflow-hidden shadow-2xl">
