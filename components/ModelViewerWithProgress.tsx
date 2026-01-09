@@ -14,9 +14,10 @@ const ProgressContext = createContext({ setProgress: (_: number) => {} });
 
 interface ModelProps {
   url: string;
+  onTrophyClick?: () => void;
 }
 
-function Model({ url, isDesktopVersion }: { url: string; isDesktopVersion: boolean }) {
+function Model({ url, isDesktopVersion, onTrophyClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -130,12 +131,19 @@ function Model({ url, isDesktopVersion }: { url: string; isDesktopVersion: boole
         <shadowMaterial opacity={0.05} transparent />
       </mesh>
 
-      <primitive object={scene} dispose={null} />
+      {/* Clickable wrapper for trophy */}
+      {isTrophy && onTrophyClick ? (
+        <group onClick={onTrophyClick}>
+          <primitive object={scene} dispose={null} />
+        </group>
+      ) : (
+        <primitive object={scene} dispose={null} />
+      )}
     </group>
   );
 }
 
-function Scene({ modelPath, isDesktopVersion }: { modelPath: string; isDesktopVersion: boolean }) {
+function Scene({ modelPath, isDesktopVersion, onTrophyClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void }) {
   const { progress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
 
@@ -192,7 +200,7 @@ function Scene({ modelPath, isDesktopVersion }: { modelPath: string; isDesktopVe
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} isDesktopVersion={isDesktopVersion} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
@@ -213,9 +221,10 @@ function Scene({ modelPath, isDesktopVersion }: { modelPath: string; isDesktopVe
 interface ModelViewerWithProgressProps {
   modelPath: string;
   isDesktopVersion?: boolean;
+  onTrophyClick?: () => void;
 }
 
-export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false }: ModelViewerWithProgressProps) {
+export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [canShowCanvas, setCanShowCanvas] = useState(false);
@@ -273,7 +282,7 @@ export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = 
             style={{ background: 'transparent' }}
             performance={{ min: 0.5 }}
           >
-            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} />
+            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} />
           </Canvas>
         )}
       </div>

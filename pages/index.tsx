@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, Suspense, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import TabBar, { TabType } from '@/components/TabBar';
 import ContactModal from '@/components/ContactModal';
 import { useGLTF } from '@react-three/drei';
@@ -22,6 +23,7 @@ const getMobileModels = () => ({
 });
 
 export default function Home() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('lion');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [modelPaths, setModelPaths] = useState(getModels());
@@ -30,6 +32,10 @@ export default function Home() {
   const [desktopModelsLoaded, setDesktopModelsLoaded] = useState(false);
   const [dynamicFontSize, setDynamicFontSize] = useState<number | null>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+
+  const handleTrophyClick = () => {
+    router.push('/winnings');
+  };
 
   // Detect if mobile and use mobile-optimized models
   useEffect(() => {
@@ -241,7 +247,11 @@ export default function Home() {
       <main className="flex-1 flex items-center justify-center">
         <div className="relative w-full max-w-4xl h-full mx-auto">
           <Suspense fallback={null}>
-            <ModelViewerWithProgress modelPath={modelPaths[activeTab]} isDesktopVersion={desktopModelsLoaded} />
+            <ModelViewerWithProgress
+              modelPath={modelPaths[activeTab]}
+              isDesktopVersion={desktopModelsLoaded}
+              onTrophyClick={activeTab === 'winnings' ? handleTrophyClick : undefined}
+            />
           </Suspense>
 
           {/* Contact Us Button */}
