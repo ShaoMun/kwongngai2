@@ -124,17 +124,18 @@ export default function LionPage() {
         <meta name="description" content="Gallery showcasing the magnificent lion dance performances" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center p-4 sm:p-8 relative">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center p-4 sm:p-8 relative">
         <button onClick={handleBack} className="fixed top-4 left-4 z-[100] bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>
           ← Back
         </button>
 
-        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl pt-20 pb-8 overflow-hidden">
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8 text-center uppercase" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
-            Lion Dance
-          </h2>
+        <h2 className="text-4xl md:text-6xl font-bold text-gray-900 text-center uppercase pt-16 pb-4 md:pb-8" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+          Lion Dance
+        </h2>
 
-          <div ref={carouselRef} className="relative w-full max-w-6xl mx-auto aspect-[16/9] select-none overflow-visible" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
+        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl">
+          <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
+            <div ref={carouselRef} className="relative w-full aspect-[3/4] md:aspect-[16/9] select-none overflow-hidden lg:overflow-visible" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
             {/* Far Previous (i-2) - Appears when dragging left */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: Math.max(0, Math.min(0.35, -dragProgress - 0.3)), transform: `translateX(${dragProgress * 50 - 150}%) scale(0.45)`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 0 }}>
                 <div className="relative w-[65%] h-[65%] max-w-[750px] rounded-2xl overflow-hidden shadow-2xl">
@@ -148,7 +149,7 @@ export default function LionPage() {
               </div>
 
               {/* Previous (i-1) - Always visible on left, more prominent */}
-              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: dragProgress > 0 ? 0.55 + Math.min(1, dragProgress) * 0.45 : 0.55 - Math.min(0.3, -dragProgress * 0.3), transform: `translateX(${dragProgress > 0 ? dragProgress * 70 - 75 : -75}%) scale(${0.65 + (dragProgress > 0 ? Math.min(1, dragProgress) * 0.35 : -Math.min(0.1, -dragProgress * 0.1))})`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 5 }}>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: dragProgress > 0 ? 0.55 + Math.min(1, dragProgress) * 0.45 : 0.55 - Math.min(0.3, -dragProgress * 0.3), transform: `translateX(${dragProgress > 0 ? dragProgress * 70 - 72 : -72}%) scale(${0.65 + (dragProgress > 0 ? Math.min(1, dragProgress) * 0.35 : -Math.min(0.1, -dragProgress * 0.1))})`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 5 }}>
                 <div className="relative w-[78%] h-[78%] max-w-[880px] rounded-2xl overflow-hidden shadow-2xl">
                   <Image src={lionImages[prevIndex].src} alt="Previous" fill className="object-cover" sizes="(max-width: 768px) 100vw, 65vw" draggable={false} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
@@ -160,7 +161,7 @@ export default function LionPage() {
               </div>
 
               {/* Current (i) - Focused in center */}
-              <div className="absolute inset-0 flex items-center justify-center cursor-pointer" style={{ opacity: getCurrentOpacity(), transform: getCurrentTransform(), transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 10 }} onClick={() => !isDragging && setIsModalOpen(true)}>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: getCurrentOpacity(), transform: getCurrentTransform(), transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 10 }}>
                 <div className="relative w-[85%] h-[85%] max-w-[950px] rounded-2xl overflow-hidden shadow-2xl">
                   <Image src={lionImages[currentIndex].src} alt={lionImages[currentIndex].label} fill className="object-cover" sizes="(max-width: 768px) 100vw, 75vw" priority draggable={false} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
@@ -172,7 +173,7 @@ export default function LionPage() {
               </div>
 
               {/* Next (i+1) - Always visible on right, more prominent */}
-              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: dragProgress < 0 ? 0.55 + Math.min(1, -dragProgress) * 0.45 : 0.55 - Math.min(0.3, dragProgress * 0.3), transform: `translateX(${dragProgress < 0 ? dragProgress * 70 + 75 : 75}%) scale(${0.65 + (dragProgress < 0 ? Math.min(1, -dragProgress) * 0.35 : -Math.min(0.1, dragProgress * 0.1))})`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 5 }}>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: dragProgress < 0 ? 0.55 + Math.min(1, -dragProgress) * 0.45 : 0.55 - Math.min(0.3, dragProgress * 0.3), transform: `translateX(${dragProgress < 0 ? dragProgress * 70 + 72 : 72}%) scale(${0.65 + (dragProgress < 0 ? Math.min(1, -dragProgress) * 0.35 : -Math.min(0.1, dragProgress * 0.1))})`, transition: (isDragging || justChangedIndex) ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 5 }}>
                 <div className="relative w-[78%] h-[78%] max-w-[880px] rounded-2xl overflow-hidden shadow-2xl">
                   <Image src={lionImages[nextIndex].src} alt="Next" fill className="object-cover" sizes="(max-width: 768px) 100vw, 65vw" draggable={false} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
@@ -196,10 +197,11 @@ export default function LionPage() {
               </div>
             </div>
 
-          <div className="flex justify-center gap-3 mt-8">
-            {lionImages.map((_, index) => (
-              <button key={index} onClick={() => setCurrentIndex(index)} className={`h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-red-600 w-8' : 'bg-gray-400 hover:bg-gray-500 w-3'}`} aria-label={`Go to slide ${index + 1}`} />
-            ))}
+            <div className="flex justify-center gap-3 mt-6 md:mt-8">
+              {lionImages.map((_, index) => (
+                <button key={index} onClick={() => setCurrentIndex(index)} className={`h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-red-600 w-8' : 'bg-gray-400 hover:bg-gray-500 w-3'}`} aria-label={`Go to slide ${index + 1}`} />
+              ))}
+            </div>
           </div>
         </main>
       </div>
