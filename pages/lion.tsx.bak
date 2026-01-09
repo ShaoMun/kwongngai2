@@ -1,0 +1,329 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Head from 'next/head';
+import Image from 'next/image';
+
+interface LionImage {
+  src: string;
+  label: string;
+}
+
+const lionImages: LionImage[] = [
+  { src: '/lion-4.jpeg', label: 'Southern Lion' },
+  { src: '/lion-2.jpeg', label: 'High Pole' },
+  { src: '/lion-5.jpeg', label: 'LED Lion' },
+  { src: '/lion-3.jpeg', label: 'LED High Pole' },
+  { src: '/lion-1.jpeg', label: 'Northern Lion' },
+  { src: '/lion-6.jpeg', label: 'Mix & Match' },
+];
+
+export default function LionPage() {
+  const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [startX, setStartX] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % lionImages.length);
+  };
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + lionImages.length) % lionImages.length);
+  };
+
+  const handleBack = () => {
+    router.push('/');
+  };
+
+  // Mouse/Touch events for dragging
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const diff = e.clientX - startX;
+    setDragOffset(diff);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+
+    const threshold = 100;
+    if (dragOffset > threshold) {
+      goToPrev();
+    } else if (dragOffset < -threshold) {
+      goToNext();
+    }
+
+    setIsDragging(false);
+    setDragOffset(0);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const diff = e.touches[0].clientX - startX;
+    setDragOffset(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+
+    const threshold = 100;
+    if (dragOffset > threshold) {
+      goToPrev();
+    } else if (dragOffset < -threshold) {
+      goToNext();
+    }
+
+    setIsDragging(false);
+    setDragOffset(0);
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        handleMouseUp();
+      }
+    };
+
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, dragOffset]);
+
+  // Normalize drag offset to -1 to 1 range for smooth transitions
+  const getDragProgress = () => {
+    const maxDrag = 200;
+    return Math.max(-1, Math.min(1, dragOffset / maxDrag));
+  };
+
+  const dragProgress = getDragProgress();
+
+  const prevIndex = (currentIndex - 1 + lionImages.length) % lionImages.length;
+  const nextIndex = (currentIndex + 1) % lionImages.length;
+
+  // Calculate visible images and their positions
+  const getVisibleImages = () => {
+    const images: { image: LionImage; index: number; offset: number; isCurrent: boolean }[] = [];
+    const totalWidth = 100; // percentage
+    const currentOffset = isDragging ? dragOffset : 0;
+
+    for (let i = -2; i <= 2; i++) {
+      const index = (currentIndex + i + lionImages.length) % lionImages.length;
+      const baseOffset = i * totalWidth;
+      const finalOffset = baseOffset + (currentOffset / 10); // Scale down drag effect
+      images.push({
+        image: lionImages[index],
+        index,
+        offset: finalOffset,
+        isCurrent: i === 0
+      });
+    }
+
+    return images;
+  };
+
+  const visibleImages = getVisibleImages();
+
+  return (
+    <>
+      <Head>
+        <title>Lion Dance Gallery - Kwong Ngai Lion Dance</title>
+        <meta name="description" content="Gallery showcasing the magnificent lion dance performances" />
+      </Head>
+
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center p-4 sm:p-8 relative">
+        {/* Back Button */}
+        <button
+          onClick={handleBack}
+          className="fixed top-4 left-4 z-[100] bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all font-semibold"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          ← Back
+        </button>
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl pt-20 pb-8 overflow-hidden">
+          {/* Title */}
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8 text-center uppercase" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+            Lion Dance
+          </h2>
+
+          {/* Circular Carousel */}
+          <div
+            ref={carouselRef}
+            className="relative w-full max-w-5xl mx-auto aspect-[16/9] select-none"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          >
+            {/* Carousel Container with 3D Perspective */}
+            <div className="relative w-full h-full perspective-1000">
+              {visibleImages.map(({ image, index, offset, isCurrent }) => {
+                  // Calculate 3D transforms for circular effect
+                  const rotateY = offset * -15; // Rotate each card
+                  const translateZ = Math.abs(offset) * -100; // Push side cards back
+                  const scale = 1 - Math.abs(offset) * 0.15; // Scale down side cards
+                  const opacity = 1 - Math.abs(offset) * 0.4; // Fade out side cards
+                  const zIndex = 100 - Math.abs(Math.round(offset));
+
+                  const transform = `
+                    translateX(${offset * 40}%)
+                    translateZ(${translateZ}px)
+                    rotateY(${rotateY}deg)
+                    scale(${Math.max(0.5, scale)})
+                  `;
+
+                  return (
+                    <div
+                      key={`${index}-${offset}`}
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{
+                        transform,
+                        opacity: Math.max(0, opacity),
+                        zIndex,
+                        transition: isDragging ? 'none' : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                        transformStyle: 'preserve-3d',
+                      }}
+                    >
+                      {/* Image Card */}
+                      <div
+                        className={`
+                          relative rounded-2xl overflow-hidden shadow-2xl
+                          ${isCurrent ? 'cursor-pointer' : 'pointer-events-none'}
+                        `}
+                        style={{
+                          width: '80%',
+                          height: '80%',
+                          maxWidth: '900px',
+                        }}
+                        onClick={() => isCurrent && !isDragging && setIsModalOpen(true)}
+                      >
+                        <Image
+                          src={image.src}
+                          alt={image.label}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 70vw"
+                          priority={isCurrent}
+                          draggable={false}
+                        />
+
+                        {/* Label - Always Visible */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                          <div className="absolute bottom-8 left-8 right-8">
+                            <h3 className="text-3xl md:text-4xl font-bold text-white" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+                              {image.label}
+                            </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          {/* Dots Navigation */}
+          <div className="flex justify-center gap-3 mt-8">
+            {lionImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-red-600 w-8'
+                    : 'bg-gray-400 hover:bg-gray-500 w-3'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Full Screen Modal */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goToPrev();
+            }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-4 rounded-full transition-all hover:scale-110"
+            aria-label="Previous image"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <div className="relative max-w-6xl w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="relative aspect-[16/9] w-full">
+              <Image
+                src={lionImages[currentIndex].src}
+                alt={lionImages[currentIndex].label}
+                fill
+                className="object-contain rounded-lg"
+                sizes="(max-width: 640px) 100vw, 90vw"
+                priority
+              />
+            </div>
+            <div className="text-center mt-6">
+              <h3 className="text-4xl font-bold text-white" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+                {lionImages[currentIndex].label}
+              </h3>
+            </div>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goToNext();
+            }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-4 rounded-full transition-all hover:scale-110"
+            aria-label="Next image"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white p-4 rounded-full transition-all hover:scale-110"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+    </>
+  );
+}

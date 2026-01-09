@@ -15,9 +15,10 @@ const ProgressContext = createContext({ setProgress: (_: number) => {} });
 interface ModelProps {
   url: string;
   onTrophyClick?: () => void;
+  onLionClick?: () => void;
 }
 
-function Model({ url, isDesktopVersion, onTrophyClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void }) {
+function Model({ url, isDesktopVersion, onTrophyClick, onLionClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -33,6 +34,7 @@ function Model({ url, isDesktopVersion, onTrophyClick }: { url: string; isDeskto
   const shouldEnableShadows = isDesktopVersion || !isMobileDevice;
   const isTrophy = url.includes('trophy');
   const isDrum = url.includes('drum');
+  const isLion = url.includes('lion');
 
   useEffect(() => {
     // Store original values to restore them
@@ -131,9 +133,9 @@ function Model({ url, isDesktopVersion, onTrophyClick }: { url: string; isDeskto
         <shadowMaterial opacity={0.05} transparent />
       </mesh>
 
-      {/* Clickable wrapper for trophy */}
-      {isTrophy && onTrophyClick ? (
-        <group onClick={onTrophyClick}>
+      {/* Clickable wrapper for trophy and lion */}
+      {(isTrophy && onTrophyClick) || (isLion && onLionClick) ? (
+        <group onClick={isTrophy ? onTrophyClick : onLionClick}>
           <primitive object={scene} dispose={null} />
         </group>
       ) : (
@@ -143,7 +145,7 @@ function Model({ url, isDesktopVersion, onTrophyClick }: { url: string; isDeskto
   );
 }
 
-function Scene({ modelPath, isDesktopVersion, onTrophyClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void }) {
+function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void }) {
   const { progress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
 
@@ -200,7 +202,7 @@ function Scene({ modelPath, isDesktopVersion, onTrophyClick }: { modelPath: stri
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
@@ -222,9 +224,10 @@ interface ModelViewerWithProgressProps {
   modelPath: string;
   isDesktopVersion?: boolean;
   onTrophyClick?: () => void;
+  onLionClick?: () => void;
 }
 
-export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick }: ModelViewerWithProgressProps) {
+export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick, onLionClick }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [canShowCanvas, setCanShowCanvas] = useState(false);
@@ -282,7 +285,7 @@ export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = 
             style={{ background: 'transparent' }}
             performance={{ min: 0.5 }}
           >
-            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} />
+            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} />
           </Canvas>
         )}
       </div>

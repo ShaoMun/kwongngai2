@@ -37,6 +37,10 @@ export default function Home() {
     router.push('/winnings');
   };
 
+  const handleLionClick = () => {
+    router.push('/lion');
+  };
+
   // Detect if mobile and use mobile-optimized models
   useEffect(() => {
     setIsClient(true);
@@ -251,6 +255,7 @@ export default function Home() {
               modelPath={modelPaths[activeTab]}
               isDesktopVersion={desktopModelsLoaded}
               onTrophyClick={activeTab === 'winnings' ? handleTrophyClick : undefined}
+              onLionClick={activeTab === 'lion' ? handleLionClick : undefined}
             />
           </Suspense>
 
