@@ -18,7 +18,7 @@ export default function ProgressBar({ progress }: ProgressBarProps) {
   }, [progress]);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center z-50">
       <div className="flex flex-col items-center gap-4 w-48 bg-gradient-to-br from-gray-50/90 to-gray-100/90 backdrop-blur-md rounded-2xl shadow-xl p-6">
         {/* Progress bar container */}
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">

@@ -12,7 +12,7 @@ type GLTFResult = any;
 // Context to share progress state
 const ProgressContext = createContext({ setProgress: (_: number) => {} });
 
-function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void; onDragonClick?: () => void; onDrumClick?: () => void }) {
+function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick, onModelLoaded }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void; onDragonClick?: () => void; onDrumClick?: () => void; onModelLoaded?: () => void }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -20,8 +20,9 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClic
   useEffect(() => {
     if (scene) {
       setProgress(100);
+      onModelLoaded?.();
     }
-  }, [scene, setProgress]);
+  }, [scene, setProgress, onModelLoaded]);
 
   // Skip shadow processing on mobile for speed, unless desktop version is loaded
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 640;
@@ -142,8 +143,9 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClic
 }
 
 function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void; onDragonClick?: () => void; onDrumClick?: () => void }) {
-  const { progress } = useProgress();
+  const { progress: dreiProgress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   // Get optimal rendering settings based on device
   let settings = getOptimalRenderingSettings();
@@ -158,10 +160,14 @@ function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthe
     };
   }
 
-  // Forward progress to parent
+  // Forward progress to parent, but prioritize model loaded state
   useEffect(() => {
-    setProgress(progress);
-  }, [progress, setProgress]);
+    if (modelLoaded) {
+      setProgress(100);
+    } else {
+      setProgress(dreiProgress);
+    }
+  }, [dreiProgress, modelLoaded, setProgress]);
 
   // Determine if mobile and model type
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
@@ -198,7 +204,7 @@ function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthe
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} onDragonClick={onDragonClick} onDrumClick={onDrumClick} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} onDragonClick={onDragonClick} onDrumClick={onDrumClick} onModelLoaded={() => setModelLoaded(true)} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}

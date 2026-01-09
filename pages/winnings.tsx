@@ -439,7 +439,7 @@ export default function WinningsPage() {
         {showBackToTop && (
           <button
             onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-50 bg-black text-white p-3 rounded-full hover:bg-gray-800 transition-all shadow-lg"
+            className="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-50 bg-black text-white p-3 rounded-full hover:bg-gray-800 transition-all shadow-lg"
             style={{ fontFamily: "'Inter', sans-serif" }}
             aria-label="Back to top"
           >
