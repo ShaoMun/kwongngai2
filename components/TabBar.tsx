@@ -41,7 +41,7 @@ export default function TabBar({ activeTab, onTabChange, modelPaths, isMobile }:
             onMouseEnter={() => setHoveredTab(tab.key)}
             onMouseLeave={() => setHoveredTab(null)}
             className={`
-              flex-1 min-w-0 px-3 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300
+              flex-1 min-w-[20px] sm:min-w-[100px] px-3 sm:px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300
               ${activeTab === tab.key
                 ? 'bg-white text-black shadow-lg'
                 : 'text-black hover:bg-white/20'

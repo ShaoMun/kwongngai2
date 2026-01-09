@@ -111,7 +111,7 @@ export default function Home() {
           </Suspense>
 
           {/* Contact Us Button */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="absolute bottom-16 sm:bottom-8 left-1/2 transform -translate-x-1/2">
             <button
               onClick={() => setIsContactModalOpen(true)}
               className="bg-black text-white text-base sm:text-lg md:text-xl font-bold uppercase tracking-wider px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:bg-gray-800 transition-all relative"
