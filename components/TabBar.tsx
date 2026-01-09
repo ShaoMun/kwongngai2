@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useGLTF } from '@react-three/drei';
 
-export type TabType = 'lion' | 'dragon' | 'drum' | 'winnings';
+export type TabType = 'lion' | 'dragon' | 'drum' | 'others' | 'winnings';
 
 interface TabBarProps {
   activeTab: TabType;
@@ -28,6 +28,7 @@ export default function TabBar({ activeTab, onTabChange, modelPaths, isMobile }:
     { key: 'lion', label: 'Lion' },
     { key: 'dragon', label: 'Dragon' },
     { key: 'drum', label: 'Drum' },
+    { key: 'others', label: 'Others' },
     { key: 'winnings', label: 'Winnings' },
   ];
 

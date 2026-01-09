@@ -6,12 +6,14 @@ import TabBar, { TabType } from '@/components/TabBar';
 import ContactModal from '@/components/ContactModal';
 import { useGLTF } from '@react-three/drei';
 import ModelViewerWithProgress from '@/components/ModelViewerWithProgress';
+import { GLTFLoader } from 'three-stdlib';
 
 // Model path mapping
 const getModels = () => ({
   lion: '/lion.glb',
   dragon: '/dragon.glb',
   drum: '/drum.glb',
+  others: '/others.glb',
   winnings: '/trophy.glb',
 });
 
@@ -19,6 +21,7 @@ const getMobileModels = () => ({
   lion: '/lion-mobile.glb',
   dragon: '/dragon-mobile.glb',
   drum: '/drum-mobile.glb',
+  others: '/others-mobile.glb',
   winnings: '/trophy-mobile.glb',
 });
 
@@ -39,6 +42,10 @@ export default function Home() {
 
   const handleLionClick = () => {
     router.push('/lion');
+  };
+
+  const handleOthersClick = () => {
+    router.push('/others');
   };
 
   // Detect if mobile and use mobile-optimized models
@@ -71,62 +78,67 @@ export default function Home() {
       useGLTF.preload(modelPaths[activeTab]);
     }
 
-    // After 0.05 second, preload all models and start loading desktop versions
-    const timeoutId = setTimeout(() => {
-      // Preload all mobile models
-      useGLTF.preload(modelPaths.lion);
-      useGLTF.preload(modelPaths.dragon);
-      useGLTF.preload(modelPaths.drum);
-      useGLTF.preload(modelPaths.winnings);
+    // Start loading desktop models immediately in the background
+    const desktopModels = getModels();
+    const loadDesktopModels = async () => {
+      try {
+        // Helper function to load a model and wait for it to complete
+        const loadModel = (url: string): Promise<void> => {
+          return new Promise((resolve) => {
+            // Start preloading the model
+            useGLTF.preload(url);
 
-      // After all mobile models are loaded, start loading desktop versions silently
-      const desktopModels = getModels();
-      const loadDesktopModels = async () => {
-        try {
-          // Preload all desktop models into GLTF cache first
-          // This ensures they're fully parsed and ready before switching
-          await Promise.all([
-            new Promise((resolve) => {
-              useGLTF.preload(desktopModels.lion);
-              // Small delay to ensure GLTF has started loading
-              setTimeout(resolve, 100);
-            }),
-            new Promise((resolve) => {
-              useGLTF.preload(desktopModels.dragon);
-              setTimeout(resolve, 100);
-            }),
-            new Promise((resolve) => {
-              useGLTF.preload(desktopModels.drum);
-              setTimeout(resolve, 100);
-            }),
-            new Promise((resolve) => {
-              useGLTF.preload(desktopModels.winnings);
-              setTimeout(resolve, 100);
-            })
-          ]);
+            // Create a loader to actually load and verify the model is ready
+            const loader = new GLTFLoader();
+            // Note: Draco decoder is already configured globally by useGLTF.setDecoderPath()
 
-          // Additional delay to ensure all models are fully loaded into cache
-          await new Promise(resolve => setTimeout(resolve, 500));
+            loader.load(
+              url,
+              () => {
+                // Model loaded successfully
+                resolve();
+              },
+              (_progress) => {
+                // Progress - can be logged if needed
+              },
+              (error) => {
+                // Error loading model - but don't reject, just resolve to continue
+                console.warn(`Failed to load desktop model ${url}, will use mobile version:`, error);
+                resolve();
+              }
+            );
+          });
+        };
 
-          // Replace mobile models with desktop models
-          setModelPaths(desktopModels);
-          setDesktopModelsLoaded(true);
-        } catch (error) {
-          console.warn('Failed to load desktop models, sticking with mobile versions:', error);
-        }
-      };
+        // Load all desktop models in parallel
+        await Promise.all([
+          loadModel(desktopModels.lion),
+          loadModel(desktopModels.dragon),
+          loadModel(desktopModels.drum),
+          loadModel(desktopModels.others),
+          loadModel(desktopModels.winnings),
+        ]);
 
-      loadDesktopModels();
-    }, 50);
+        // All desktop models are now fully loaded - switch instantly
+        console.log('All desktop models loaded, switching to desktop versions');
+        setModelPaths(desktopModels);
+        setDesktopModelsLoaded(true);
+      } catch (error) {
+        console.warn('Failed to load desktop models, sticking with mobile versions:', error);
+      }
+    };
 
-    return () => clearTimeout(timeoutId);
+    // Start loading immediately without delay
+    loadDesktopModels();
+
+    // No cleanup needed as we want the loading to complete
   }, [isMobile, activeTab, modelPaths]);
 
   // Desktop: Preload next model when user changes tab (predictive loading)
   useEffect(() => {
     if (isMobile) return; // Skip this on mobile, use the above logic instead
 
-    const tabOrder: TabType[] = ['lion', 'dragon', 'drum', 'winnings'];
+    const tabOrder: TabType[] = ['lion', 'dragon', 'drum', 'others', 'winnings'];
     const currentIndex = tabOrder.indexOf(activeTab);
     const nextTab = tabOrder[(currentIndex + 1) % tabOrder.length];
 
@@ -256,6 +268,7 @@ export default function Home() {
               isDesktopVersion={desktopModelsLoaded}
               onTrophyClick={activeTab === 'winnings' ? handleTrophyClick : undefined}
               onLionClick={activeTab === 'lion' ? handleLionClick : undefined}
+              onOthersClick={activeTab === 'others' ? handleOthersClick : undefined}
             />
           </Suspense>
 

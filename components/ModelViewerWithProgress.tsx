@@ -12,13 +12,7 @@ type GLTFResult = any;
 // Context to share progress state
 const ProgressContext = createContext({ setProgress: (_: number) => {} });
 
-interface ModelProps {
-  url: string;
-  onTrophyClick?: () => void;
-  onLionClick?: () => void;
-}
-
-function Model({ url, isDesktopVersion, onTrophyClick, onLionClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void }) {
+function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -35,6 +29,7 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick }: { url: str
   const isTrophy = url.includes('trophy');
   const isDrum = url.includes('drum');
   const isLion = url.includes('lion');
+  const isOthers = url.includes('others');
 
   useEffect(() => {
     // Store original values to restore them
@@ -133,9 +128,9 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick }: { url: str
         <shadowMaterial opacity={0.05} transparent />
       </mesh>
 
-      {/* Clickable wrapper for trophy and lion */}
-      {(isTrophy && onTrophyClick) || (isLion && onLionClick) ? (
-        <group onClick={isTrophy ? onTrophyClick : onLionClick}>
+      {/* Clickable wrapper for trophy, lion, and others */}
+      {(isTrophy && onTrophyClick) || (isLion && onLionClick) || (isOthers && onOthersClick) ? (
+        <group onClick={isTrophy ? onTrophyClick : (isLion ? onLionClick : onOthersClick)}>
           <primitive object={scene} dispose={null} />
         </group>
       ) : (
@@ -145,7 +140,7 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick }: { url: str
   );
 }
 
-function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void }) {
+function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void }) {
   const { progress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
 
@@ -202,7 +197,7 @@ function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick }: { mo
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
@@ -225,12 +220,18 @@ interface ModelViewerWithProgressProps {
   isDesktopVersion?: boolean;
   onTrophyClick?: () => void;
   onLionClick?: () => void;
+  onOthersClick?: () => void;
 }
 
-export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick, onLionClick }: ModelViewerWithProgressProps) {
+export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick, onLionClick, onOthersClick }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [canShowCanvas, setCanShowCanvas] = useState(false);
+
+  // Return early if modelPath is not provided
+  if (!modelPath) {
+    return <ProgressBar progress={0} />;
+  }
 
   // Get optimal rendering settings based on device
   const settings = getOptimalRenderingSettings();
@@ -285,7 +286,7 @@ export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = 
             style={{ background: 'transparent' }}
             performance={{ min: 0.5 }}
           >
-            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} />
+            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} />
           </Canvas>
         )}
       </div>
