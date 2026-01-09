@@ -12,7 +12,7 @@ type GLTFResult = any;
 // Context to share progress state
 const ProgressContext = createContext({ setProgress: (_: number) => {} });
 
-function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void }) {
+function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick }: { url: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void; onDragonClick?: () => void; onDrumClick?: () => void }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -30,6 +30,7 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClic
   const isDrum = url.includes('drum');
   const isLion = url.includes('lion');
   const isOthers = url.includes('others');
+  const isDragon = url.includes('dragon');
 
   useEffect(() => {
     // Store original values to restore them
@@ -128,9 +129,9 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClic
         <shadowMaterial opacity={0.05} transparent />
       </mesh>
 
-      {/* Clickable wrapper for trophy, lion, and others */}
-      {(isTrophy && onTrophyClick) || (isLion && onLionClick) || (isOthers && onOthersClick) ? (
-        <group onClick={isTrophy ? onTrophyClick : (isLion ? onLionClick : onOthersClick)}>
+      {/* Clickable wrapper for trophy, lion, dragon, drum, and others */}
+      {(isTrophy && onTrophyClick) || (isLion && onLionClick) || (isOthers && onOthersClick) || (isDragon && onDragonClick) || (isDrum && onDrumClick) ? (
+        <group onClick={isTrophy ? onTrophyClick : (isLion ? onLionClick : (isOthers ? onOthersClick : (isDragon ? onDragonClick : onDrumClick)))}>
           <primitive object={scene} dispose={null} />
         </group>
       ) : (
@@ -140,7 +141,7 @@ function Model({ url, isDesktopVersion, onTrophyClick, onLionClick, onOthersClic
   );
 }
 
-function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void }) {
+function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick }: { modelPath: string; isDesktopVersion: boolean; onTrophyClick?: () => void; onLionClick?: () => void; onOthersClick?: () => void; onDragonClick?: () => void; onDrumClick?: () => void }) {
   const { progress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
 
@@ -197,7 +198,7 @@ function Scene({ modelPath, isDesktopVersion, onTrophyClick, onLionClick, onOthe
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} onDragonClick={onDragonClick} onDrumClick={onDrumClick} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
@@ -221,9 +222,11 @@ interface ModelViewerWithProgressProps {
   onTrophyClick?: () => void;
   onLionClick?: () => void;
   onOthersClick?: () => void;
+  onDragonClick?: () => void;
+  onDrumClick?: () => void;
 }
 
-export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick, onLionClick, onOthersClick }: ModelViewerWithProgressProps) {
+export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false, onTrophyClick, onLionClick, onOthersClick, onDragonClick, onDrumClick }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [canShowCanvas, setCanShowCanvas] = useState(false);
@@ -286,7 +289,7 @@ export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = 
             style={{ background: 'transparent' }}
             performance={{ min: 0.5 }}
           >
-            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} />
+            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} onTrophyClick={onTrophyClick} onLionClick={onLionClick} onOthersClick={onOthersClick} onDragonClick={onDragonClick} onDrumClick={onDrumClick} />
           </Canvas>
         )}
       </div>

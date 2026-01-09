@@ -48,6 +48,14 @@ export default function Home() {
     router.push('/others');
   };
 
+  const handleDragonClick = () => {
+    router.push('/dragon');
+  };
+
+  const handleDrumClick = () => {
+    router.push('/drum');
+  };
+
   // Detect if mobile and use mobile-optimized models
   useEffect(() => {
     setIsClient(true);
@@ -269,6 +277,8 @@ export default function Home() {
               onTrophyClick={activeTab === 'winnings' ? handleTrophyClick : undefined}
               onLionClick={activeTab === 'lion' ? handleLionClick : undefined}
               onOthersClick={activeTab === 'others' ? handleOthersClick : undefined}
+              onDragonClick={activeTab === 'dragon' ? handleDragonClick : undefined}
+              onDrumClick={activeTab === 'drum' ? handleDrumClick : undefined}
             />
           </Suspense>
 
