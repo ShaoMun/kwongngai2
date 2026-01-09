@@ -110,7 +110,7 @@ function Model({ url }: ModelProps) {
   // Drum is smallest of all, trophy is second
   // On mobile, reduce scale further to fit better
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-  const scale = isDrum ? (isMobile ? 1.3 : 1.6) : (isTrophy ? (isMobile ? 1.4 : 1.8) : (isMobile ? 1.75 : 2.1));
+  const scale = isDrum ? (isMobile ? 1.3 : 1.6) : (isTrophy ? (isMobile ? 1.55 : 1.8) : (isMobile ? 1.75 : 2.1));
   const position: [number, number, number] = isDrum ? [0, -1.35, 0] : (isTrophy ? [0, -1.57, 0] : [0, -2, 0]);
 
   // Store model type in context for lighting adjustments
