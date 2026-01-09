@@ -178,7 +178,7 @@ END:VCARD`;
                 KWONG NGAI
               </h2>
               <div className="w-12 sm:w-16 md:w-24 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent mb-2 sm:mb-3 md:mb-4"></div>
-              <p className="text-[10px] sm:text-xs md:text-sm tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-gray-400 text-center">Crafting Excellence</p>
+              <p className="text-[10px] sm:text-xs md:text-sm tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-gray-400 text-center">Enjoy The Show</p>
             </div>
           </div>
 
