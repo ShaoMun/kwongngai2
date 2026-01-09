@@ -10,12 +10,14 @@ import ModelViewerWithProgress from '@/components/ModelViewerWithProgress';
 const getModels = () => ({
   lion: '/lion.glb',
   dragon: '/dragon.glb',
+  drum: '/drum.glb',
   winnings: '/trophy.glb',
 });
 
 const getMobileModels = () => ({
   lion: '/lion-mobile.glb',
   dragon: '/dragon-mobile.glb',
+  drum: '/drum-mobile.glb',
   winnings: '/trophy-mobile.glb',
 });
 
@@ -57,6 +59,7 @@ export default function Home() {
     // After 3 seconds, preload the other models
     const timeoutId = setTimeout(() => {
       useGLTF.preload(modelPaths.dragon);
+      useGLTF.preload(modelPaths.drum);
       useGLTF.preload(modelPaths.winnings);
     }, 3000);
 
@@ -67,7 +70,7 @@ export default function Home() {
   useEffect(() => {
     if (isMobile) return; // Skip this on mobile, use the above logic instead
 
-    const tabOrder: TabType[] = ['lion', 'dragon', 'winnings'];
+    const tabOrder: TabType[] = ['lion', 'dragon', 'drum', 'winnings'];
     const currentIndex = tabOrder.indexOf(activeTab);
     const nextTab = tabOrder[(currentIndex + 1) % tabOrder.length];
 
@@ -95,7 +98,7 @@ export default function Home() {
 
       {/* Title below tab bar */}
       <div className="absolute top-28 left-8 z-0 max-w-[90%] sm:max-w-[100%] md:max-w-[100%]">
-        <h1 className="text-6xl sm:text-7xl md:text-8xl text-gray-900 uppercase break-words leading-tight" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
+        <h1 className="text-8xl sm:text-9xl md:text-9xl text-gray-900 uppercase break-words leading-tight" style={{ fontFamily: "'Alfa Slab One', cursive" }}>
           {activeTab === 'winnings' ? 'WINNINGS' : activeTab.toUpperCase()}
         </h1>
       </div>

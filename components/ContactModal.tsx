@@ -22,12 +22,12 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       // Start flipping after the card appears
       const flipTimer = setTimeout(() => {
         setIsFlipped(true);
-      }, 600); // Shorter delay - 0.6s
+      }, 1200); // Longer delay - 1.2s
 
       // Show buttons after flip completes
       const buttonsTimer = setTimeout(() => {
         setShowButtons(true);
-      }, 1600); // 0.6s initial + 1s flip duration
+      }, 2500); // 1.2s initial + 1s flip duration
 
       return () => {
         clearTimeout(flipTimer);
@@ -104,19 +104,19 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 VERSION:3.0
 FN:KwongNgai - Jason Tan
 TEL;TYPE=CELL:+60123638359
-EMAIL:jason@kwongngai.com
+EMAIL:editour741@gmail.com
 ADR;TYPE=HOME:;;139, Jalan Sri Ehsan 7, Taman Sri Ehsan\\, 52100 Kuala Lumpur\\, Selangor;;;;
 END:VCARD`;
 
+    // Create a blob and encode it as base64 for the data URI
     const blob = new Blob([vcfContent], { type: 'text/vcard' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'kwongngai_jason_tan.vcf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64data = reader.result;
+      // Create a data URI that will trigger the contact app
+      window.location.href = base64data as string;
+    };
+    reader.readAsDataURL(blob);
   };
 
   if (!isOpen) return null;
@@ -230,7 +230,7 @@ END:VCARD`;
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">jason@kwongngai.com</p>
+                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">editour741@gmail.com</p>
                   </div>
 
                   <div className="flex items-start space-x-2 sm:space-x-2 md:space-x-3">
@@ -307,6 +307,21 @@ END:VCARD`;
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
             </svg>
             <span>Instagram</span>
+          </a>
+
+          <a
+            href="mailto:editour741@gmail.com"
+            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            style={{
+              opacity: hideButtons ? 0 : 1,
+              transform: hideButtons ? 'translateY(-10px)' : 'translateY(0)',
+              transition: 'all 0.2s ease-out 0.15s',
+            }}
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Email</span>
           </a>
         </div>
       )}

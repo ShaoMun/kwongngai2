@@ -30,8 +30,15 @@ function Model({ url }: ModelProps) {
   // Skip shadow processing on mobile for speed
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 640;
   const isTrophy = url.includes('trophy');
+  const isDrum = url.includes('drum');
 
   useEffect(() => {
+    // Store original values to restore them
+    const originalValues = new Map<THREE.Mesh, {
+      emissive?: THREE.Color;
+      color?: THREE.Color;
+    }>();
+
     if (!isMobileDevice) {
       scene.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
@@ -41,13 +48,22 @@ function Model({ url }: ModelProps) {
       });
     }
 
-    // On mobile: make lion/dragon darker, trophy lighter by adjusting materials
+    // On mobile: make lion/dragon darker, trophy lighter, drum stays default
     if (isMobileDevice) {
       scene.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh && child.material) {
           const material = child.material as THREE.MeshStandardMaterial;
 
+          // Store original values before modification
+          if (material.emissive) {
+            originalValues.set(child, {
+              emissive: material.emissive.clone(),
+              color: material.color.clone()
+            });
+          }
+
           // For trophy: make it lighter (higher emissive and color)
+          // Drum: keep default (no adjustments)
           if (isTrophy) {
             // Increase emissive intensity to make it glow more
             if (material.emissive) {
@@ -57,7 +73,7 @@ function Model({ url }: ModelProps) {
             if (material.color) {
               material.color.offsetHSL(0, 0, 0.25);
             }
-          } else {
+          } else if (!isDrum) {
             // For lion/dragon: make them darker
             // Reduce emissive to make it less glowing
             if (material.emissive) {
@@ -68,18 +84,34 @@ function Model({ url }: ModelProps) {
               material.color.offsetHSL(0, 0, -0.15);
             }
           }
+          // Drum: no material adjustments - keep default
 
           material.needsUpdate = true;
         }
       });
     }
-  }, [scene, isMobileDevice, isTrophy]);
 
-  // Trophy needs to be smaller, lion and dragon stay the same size
+    return () => {
+      // Restore original values when unmounting
+      originalValues.forEach((values, mesh) => {
+        const material = mesh.material as THREE.MeshStandardMaterial;
+        if (values.emissive && material.emissive) {
+          material.emissive.copy(values.emissive);
+        }
+        if (values.color && material.color) {
+          material.color.copy(values.color);
+        }
+        material.needsUpdate = true;
+      });
+    };
+  }, [scene, isMobileDevice, isTrophy, isDrum]);
+
+  // Trophy and drum need to be smaller, lion and dragon stay the same size
+  // Drum is smallest of all, trophy is second
   // On mobile, reduce scale further to fit better
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-  const scale = isTrophy ? (isMobile ? 1.6 : 1.8) : (isMobile ? 1.75 : 2.1);
-  const position: [number, number, number] = isTrophy ? [0, -1.57, 0] : [0, -2, 0];
+  const scale = isDrum ? (isMobile ? 1.3 : 1.6) : (isTrophy ? (isMobile ? 1.4 : 1.8) : (isMobile ? 1.75 : 2.1));
+  const position: [number, number, number] = isDrum ? [0, -1.35, 0] : (isTrophy ? [0, -1.57, 0] : [0, -2, 0]);
 
   // Store model type in context for lighting adjustments
   useEffect(() => {
@@ -119,7 +151,7 @@ function Scene({ modelPath }: { modelPath: string }) {
   const isTrophy = modelPath.includes('trophy');
 
   // Adjust lighting intensity based on model type and device
-  // Mobile: lower intensity for lion/dragon, higher for trophy
+  // Mobile: lower intensity for lion/dragon/drum, higher for trophy
   const ambientIntensity = isMobile ? (isTrophy ? 0.5 : 0.3) : 0.4;
   const frontLightIntensity = isMobile ? (isTrophy ? 1.5 : 0.9) : 1.2;
   const topLightIntensity = isMobile ? (isTrophy ? 1.2 : 0.8) : 1;
@@ -178,6 +210,10 @@ export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithPr
   // Get optimal rendering settings based on device
   const settings = getOptimalRenderingSettings();
 
+  // Lower camera position for drum model
+  const isDrum = modelPath.includes('drum');
+  const cameraPosition = isDrum ? [0, 2.5, 5] as [number, number, number] : [0, 1.5, 5] as [number, number, number];
+
   useEffect(() => {
     setMounted(true);
     // Delay canvas creation to prioritize loading
@@ -199,7 +235,7 @@ export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithPr
         {canShowCanvas && (
           <Canvas
             shadows={settings.shadows}
-            camera={{ position: [0, 1.5, 5], fov: 50 }}
+            camera={{ position: cameraPosition, fov: 50 }}
             gl={{
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 2,
