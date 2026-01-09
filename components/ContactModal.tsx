@@ -310,7 +310,9 @@ END:VCARD`;
           </a>
 
           <a
-            href="mailto:editour741@gmail.com"
+            href="https://www.facebook.com/Kwongngailiondance/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : 1,
@@ -319,9 +321,9 @@ END:VCARD`;
             }}
           >
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
             </svg>
-            <span>Email</span>
+            <span>Facebook</span>
           </a>
         </div>
       )}

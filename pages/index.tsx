@@ -282,17 +282,27 @@ export default function Home() {
             />
           </Suspense>
 
-          {/* Contact Us Button */}
-          <div className="absolute bottom-24 sm:bottom-8 left-1/2 transform -translate-x-1/2">
+          {/* View and Contact Us Buttons */}
+          <div className="absolute bottom-24 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 sm:gap-4">
             <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="bg-black text-white text-base sm:text-lg md:text-xl font-bold uppercase tracking-wider px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:bg-gray-800 transition-all relative"
+              onClick={() => router.push(`/${activeTab}`)}
+              className="bg-white text-black text-base sm:text-lg md:text-xl font-light uppercase tracking-[0.3em] py-2.5 sm:py-3 rounded-lg hover:bg-gray-100 transition-all relative border-2 border-gray-200 w-[160px] sm:w-[180px]"
               style={{
                 fontFamily: "'Inter', sans-serif",
                 animation: 'rainbowGlow 3s ease-in-out infinite'
               }}
             >
-              Contact Us
+              View
+            </button>
+            <button
+              onClick={() => setIsContactModalOpen(true)}
+              className="bg-black text-white text-base sm:text-lg md:text-xl font-light uppercase tracking-[0.3em] py-2.5 sm:py-3 rounded-lg hover:bg-gray-800 transition-all relative w-[160px] sm:w-[180px]"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                animation: 'rainbowGlow 3s ease-in-out infinite'
+              }}
+            >
+              Contact
             </button>
           </div>
         </div>
