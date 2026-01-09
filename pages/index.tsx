@@ -52,15 +52,19 @@ export default function Home() {
     useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
   }, []);
 
-  // Mobile: Preload lion first, then other models after initial load
+  // Mobile: Preload active tab's model first, then all models after initial load
   useEffect(() => {
-    if (!isMobile || activeTab !== 'lion') return;
+    if (!isMobile) return;
 
-    // Preload lion immediately on mobile
-    useGLTF.preload(modelPaths.lion);
+    // Preload the current active tab model immediately on mobile
+    if (activeTab && modelPaths[activeTab]) {
+      useGLTF.preload(modelPaths[activeTab]);
+    }
 
-    // After 3 seconds, preload the other models
+    // After 0.05 second, preload all models and start loading desktop versions
     const timeoutId = setTimeout(() => {
+      // Preload all mobile models
+      useGLTF.preload(modelPaths.lion);
       useGLTF.preload(modelPaths.dragon);
       useGLTF.preload(modelPaths.drum);
       useGLTF.preload(modelPaths.winnings);
@@ -103,7 +107,7 @@ export default function Home() {
       };
 
       loadDesktopModels();
-    }, 3000);
+    }, 50);
 
     return () => clearTimeout(timeoutId);
   }, [isMobile, activeTab, modelPaths]);
