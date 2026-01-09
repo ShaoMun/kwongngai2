@@ -27,6 +27,7 @@ export default function Home() {
   const [modelPaths, setModelPaths] = useState(getModels());
   const [isClient, setIsClient] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [desktopModelsLoaded, setDesktopModelsLoaded] = useState(false);
 
   // Detect if mobile and use mobile-optimized models
   useEffect(() => {
@@ -61,6 +62,45 @@ export default function Home() {
       useGLTF.preload(modelPaths.dragon);
       useGLTF.preload(modelPaths.drum);
       useGLTF.preload(modelPaths.winnings);
+
+      // After all mobile models are loaded, start loading desktop versions silently
+      const desktopModels = getModels();
+      const loadDesktopModels = async () => {
+        try {
+          // Preload all desktop models into GLTF cache first
+          // This ensures they're fully parsed and ready before switching
+          await Promise.all([
+            new Promise((resolve) => {
+              useGLTF.preload(desktopModels.lion);
+              // Small delay to ensure GLTF has started loading
+              setTimeout(resolve, 100);
+            }),
+            new Promise((resolve) => {
+              useGLTF.preload(desktopModels.dragon);
+              setTimeout(resolve, 100);
+            }),
+            new Promise((resolve) => {
+              useGLTF.preload(desktopModels.drum);
+              setTimeout(resolve, 100);
+            }),
+            new Promise((resolve) => {
+              useGLTF.preload(desktopModels.winnings);
+              setTimeout(resolve, 100);
+            })
+          ]);
+
+          // Additional delay to ensure all models are fully loaded into cache
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Replace mobile models with desktop models
+          setModelPaths(desktopModels);
+          setDesktopModelsLoaded(true);
+        } catch (error) {
+          console.warn('Failed to load desktop models, sticking with mobile versions:', error);
+        }
+      };
+
+      loadDesktopModels();
     }, 3000);
 
     return () => clearTimeout(timeoutId);
@@ -107,7 +147,7 @@ export default function Home() {
       <main className="flex-1 flex items-center justify-center">
         <div className="relative w-full max-w-4xl h-full mx-auto px-4">
           <Suspense fallback={null}>
-            <ModelViewerWithProgress modelPath={modelPaths[activeTab]} />
+            <ModelViewerWithProgress modelPath={modelPaths[activeTab]} isDesktopVersion={desktopModelsLoaded} />
           </Suspense>
 
           {/* Contact Us Button */}

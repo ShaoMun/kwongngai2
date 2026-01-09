@@ -16,7 +16,7 @@ interface ModelProps {
   url: string;
 }
 
-function Model({ url }: ModelProps) {
+function Model({ url, isDesktopVersion }: { url: string; isDesktopVersion: boolean }) {
   const { scene } = useGLTF(url) as GLTFResult;
   const { setProgress } = useContext(ProgressContext);
 
@@ -27,8 +27,9 @@ function Model({ url }: ModelProps) {
     }
   }, [scene, setProgress]);
 
-  // Skip shadow processing on mobile for speed
+  // Skip shadow processing on mobile for speed, unless desktop version is loaded
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 640;
+  const shouldEnableShadows = isDesktopVersion || !isMobileDevice;
   const isTrophy = url.includes('trophy');
   const isDrum = url.includes('drum');
 
@@ -39,7 +40,7 @@ function Model({ url }: ModelProps) {
       color?: THREE.Color;
     }>();
 
-    if (!isMobileDevice) {
+    if (shouldEnableShadows) {
       scene.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
@@ -134,12 +135,22 @@ function Model({ url }: ModelProps) {
   );
 }
 
-function Scene({ modelPath }: { modelPath: string }) {
+function Scene({ modelPath, isDesktopVersion }: { modelPath: string; isDesktopVersion: boolean }) {
   const { progress } = useProgress();
   const { setProgress } = useContext(ProgressContext);
 
   // Get optimal rendering settings based on device
-  const settings = getOptimalRenderingSettings();
+  let settings = getOptimalRenderingSettings();
+
+  // When desktop version is loaded, override mobile shadow settings
+  if (isDesktopVersion) {
+    settings = {
+      ...settings,
+      shadows: true,
+      enableShadows: true,
+      shadowMapSize: 1024,
+    };
+  }
 
   // Forward progress to parent
   useEffect(() => {
@@ -151,10 +162,11 @@ function Scene({ modelPath }: { modelPath: string }) {
   const isTrophy = modelPath.includes('trophy');
 
   // Adjust lighting intensity based on model type and device
-  // Mobile: lower intensity for lion/dragon/drum, higher for trophy
-  const ambientIntensity = isMobile ? (isTrophy ? 0.5 : 0.3) : 0.4;
-  const frontLightIntensity = isMobile ? (isTrophy ? 1.5 : 0.9) : 1.2;
-  const topLightIntensity = isMobile ? (isTrophy ? 1.2 : 0.8) : 1;
+  // When desktop version is loaded, always use desktop lighting regardless of screen size
+  const useDesktopLighting = isDesktopVersion || !isMobile;
+  const ambientIntensity = useDesktopLighting ? 0.4 : (isTrophy ? 0.5 : 0.3);
+  const frontLightIntensity = useDesktopLighting ? 1.2 : (isTrophy ? 1.5 : 0.9);
+  const topLightIntensity = useDesktopLighting ? 1 : (isTrophy ? 1.2 : 0.8);
 
   return (
     <>
@@ -180,7 +192,7 @@ function Scene({ modelPath }: { modelPath: string }) {
       )}
 
       <Suspense fallback={null}>
-        <Model url={modelPath} />
+        <Model url={modelPath} isDesktopVersion={isDesktopVersion} />
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
@@ -200,9 +212,10 @@ function Scene({ modelPath }: { modelPath: string }) {
 
 interface ModelViewerWithProgressProps {
   modelPath: string;
+  isDesktopVersion?: boolean;
 }
 
-export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithProgressProps) {
+export default function ModelViewerWithProgress({ modelPath, isDesktopVersion = false }: ModelViewerWithProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [canShowCanvas, setCanShowCanvas] = useState(false);
@@ -260,7 +273,7 @@ export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithPr
             style={{ background: 'transparent' }}
             performance={{ min: 0.5 }}
           >
-            <Scene modelPath={modelPath} />
+            <Scene modelPath={modelPath} isDesktopVersion={isDesktopVersion} />
           </Canvas>
         )}
       </div>
