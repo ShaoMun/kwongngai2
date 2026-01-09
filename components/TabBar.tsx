@@ -8,38 +8,21 @@ export type TabType = 'lion' | 'dragon' | 'winnings';
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  modelPaths: Record<TabType, string>;
+  isMobile: boolean;
 }
 
-const MODEL_PATHS: Record<TabType, string> = {
-  lion: '/lion.glb',
-  dragon: '/dragon.glb',
-  winnings: '/trophy.glb',
-};
-
-export default function TabBar({ activeTab, onTabChange }: TabBarProps) {
+export default function TabBar({ activeTab, onTabChange, modelPaths, isMobile }: TabBarProps) {
   const [hoveredTab, setHoveredTab] = useState<TabType | null>(null);
 
-  // Predictive preloading: Start loading when user hovers over a tab
+  // Desktop: Predictive preloading on hover
   useEffect(() => {
+    if (isMobile) return; // Skip on mobile
+
     if (hoveredTab && hoveredTab !== activeTab) {
-      // Preload the hovered tab's model
-      useGLTF.preload(MODEL_PATHS[hoveredTab]);
+      useGLTF.preload(modelPaths[hoveredTab]);
     }
-  }, [hoveredTab, activeTab]);
-
-  // Preload the next tab in sequence
-  useEffect(() => {
-    const tabs: TabType[] = ['lion', 'dragon', 'winnings'];
-    const currentIndex = tabs.indexOf(activeTab);
-    const nextTab = tabs[(currentIndex + 1) % tabs.length];
-
-    // Preload next tab after current tab loads
-    const timer = setTimeout(() => {
-      useGLTF.preload(MODEL_PATHS[nextTab]);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+  }, [hoveredTab, activeTab, modelPaths, isMobile]);
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'lion', label: 'Lion' },

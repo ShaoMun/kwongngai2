@@ -7,9 +7,6 @@ import * as THREE from 'three';
 import ProgressBar from '@/components/ProgressBar';
 import { getOptimalRenderingSettings } from '@/lib/modelLoader';
 
-// Configure Draco decoder for compressed GLB files
-useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-
 type GLTFResult = any;
 
 // Context to share progress state
@@ -32,6 +29,7 @@ function Model({ url }: ModelProps) {
 
   // Skip shadow processing on mobile for speed
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 640;
+  const isTrophy = url.includes('trophy');
 
   useEffect(() => {
     if (!isMobileDevice) {
@@ -42,14 +40,54 @@ function Model({ url }: ModelProps) {
         }
       });
     }
-  }, [scene, isMobileDevice]);
+
+    // On mobile: make lion/dragon darker, trophy lighter by adjusting materials
+    if (isMobileDevice) {
+      scene.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh && child.material) {
+          const material = child.material as THREE.MeshStandardMaterial;
+
+          // For trophy: make it lighter (higher emissive and color)
+          if (isTrophy) {
+            // Increase emissive intensity to make it glow more
+            if (material.emissive) {
+              material.emissive.multiplyScalar(2.5);
+            }
+            // Brighten the base color
+            if (material.color) {
+              material.color.offsetHSL(0, 0, 0.25);
+            }
+          } else {
+            // For lion/dragon: make them darker
+            // Reduce emissive to make it less glowing
+            if (material.emissive) {
+              material.emissive.multiplyScalar(0.5);
+            }
+            // Darken the base color
+            if (material.color) {
+              material.color.offsetHSL(0, 0, -0.15);
+            }
+          }
+
+          material.needsUpdate = true;
+        }
+      });
+    }
+  }, [scene, isMobileDevice, isTrophy]);
 
   // Trophy needs to be smaller, lion and dragon stay the same size
   // On mobile, reduce scale further to fit better
-  const isTrophy = url.includes('trophy');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
   const scale = isTrophy ? (isMobile ? 1.6 : 1.8) : (isMobile ? 1.75 : 2.1);
   const position: [number, number, number] = isTrophy ? [0, -1.57, 0] : [0, -2, 0];
+
+  // Store model type in context for lighting adjustments
+  useEffect(() => {
+    // Store model type in a data attribute for the Scene component to read
+    if (typeof window !== 'undefined') {
+      document.documentElement.dataset.modelType = isTrophy ? 'trophy' : 'other';
+    }
+  }, [isTrophy]);
 
   return (
     <group scale={scale} position={position}>
@@ -76,15 +114,25 @@ function Scene({ modelPath }: { modelPath: string }) {
     setProgress(progress);
   }, [progress, setProgress]);
 
+  // Determine if mobile and model type
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const isTrophy = modelPath.includes('trophy');
+
+  // Adjust lighting intensity based on model type and device
+  // Mobile: lower intensity for lion/dragon, higher for trophy
+  const ambientIntensity = isMobile ? (isTrophy ? 0.5 : 0.3) : 0.4;
+  const frontLightIntensity = isMobile ? (isTrophy ? 1.5 : 0.9) : 1.2;
+  const topLightIntensity = isMobile ? (isTrophy ? 1.2 : 0.8) : 1;
+
   return (
     <>
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={ambientIntensity} />
 
       {/* Top-down lighting for shadows - conditionally enabled */}
       {settings.enableShadows && (
         <directionalLight
           position={[0, 10, 0]}
-          intensity={1}
+          intensity={topLightIntensity}
           castShadow
           shadow-mapSize-width={settings.shadowMapSize}
           shadow-mapSize-height={settings.shadowMapSize}
@@ -104,7 +152,7 @@ function Scene({ modelPath }: { modelPath: string }) {
       </Suspense>
 
       {/* Strong front lighting - stationary, outside rotation */}
-      <directionalLight position={[0, 0, 10]} intensity={1.2} />
+      <directionalLight position={[0, 0, 10]} intensity={frontLightIntensity} />
 
       <OrbitControls
         enableZoom={false}
@@ -159,15 +207,22 @@ export default function ModelViewerWithProgress({ modelPath }: ModelViewerWithPr
               premultipliedAlpha: false,
               antialias: settings.antialias,
               powerPreference: 'high-performance',
-              stencil: false, // Disable stencil buffer for mobile
-              depth: true, // Keep depth for 3D
+              stencil: false,
+              depth: true,
+              // Enable better memory management
+              failIfMajorPerformanceCaveat: false,
             }}
             onCreated={(state) => {
               state.gl.setClearColor(0x000000, 0);
+              // Dispose resources when unmounted
+              return () => {
+                state.gl.dispose();
+                state.gl.forceContextLoss();
+              };
             }}
             dpr={[1, settings.pixelRatio]}
             style={{ background: 'transparent' }}
-            performance={{ min: 0.5 }} // Allow FPS to drop on mobile
+            performance={{ min: 0.5 }}
           >
             <Scene modelPath={modelPath} />
           </Canvas>

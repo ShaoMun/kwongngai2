@@ -7,26 +7,77 @@ import { useGLTF } from '@react-three/drei';
 import ModelViewerWithProgress from '@/components/ModelViewerWithProgress';
 
 // Model path mapping
-const MODEL_PATHS = {
+const getModels = () => ({
   lion: '/lion.glb',
   dragon: '/dragon.glb',
   winnings: '/trophy.glb',
-};
+});
+
+const getMobileModels = () => ({
+  lion: '/lion-mobile.glb',
+  dragon: '/dragon-mobile.glb',
+  winnings: '/trophy-mobile.glb',
+});
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('lion');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [modelPaths, setModelPaths] = useState(getModels());
+  const [isClient, setIsClient] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Preload all models in background
+  // Detect if mobile and use mobile-optimized models
   useEffect(() => {
-    // Preload Draco decoder first to avoid delay on first model load
-    useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    setIsClient(true);
 
-    // Then preload all models
-    Object.values(MODEL_PATHS).forEach(path => {
-      useGLTF.preload(path);
-    });
+    const checkIsMobile = typeof window !== 'undefined' && (
+      window.innerWidth < 768 ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    );
+
+    setIsMobile(checkIsMobile);
+
+    if (checkIsMobile) {
+      setModelPaths(getMobileModels());
+    } else {
+      setModelPaths(getModels());
+    }
+
+    // Preload Draco decoder once at startup
+    useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
   }, []);
+
+  // Mobile: Preload lion first, then other models after initial load
+  useEffect(() => {
+    if (!isMobile || activeTab !== 'lion') return;
+
+    // Preload lion immediately on mobile
+    useGLTF.preload(modelPaths.lion);
+
+    // After 3 seconds, preload the other models
+    const timeoutId = setTimeout(() => {
+      useGLTF.preload(modelPaths.dragon);
+      useGLTF.preload(modelPaths.winnings);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isMobile, activeTab, modelPaths]);
+
+  // Desktop: Preload next model when user changes tab (predictive loading)
+  useEffect(() => {
+    if (isMobile) return; // Skip this on mobile, use the above logic instead
+
+    const tabOrder: TabType[] = ['lion', 'dragon', 'winnings'];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const nextTab = tabOrder[(currentIndex + 1) % tabOrder.length];
+
+    // Preload the next model in the sequence after 1 second
+    const timeoutId = setTimeout(() => {
+      useGLTF.preload(modelPaths[nextTab]);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeTab, modelPaths, isMobile]);
 
   const handleTabChange = (tab: TabType) => {
     if (tab !== activeTab) {
@@ -37,7 +88,10 @@ export default function Home() {
   return (
     <div className="h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       {/* Glassmorphism Tab Bar */}
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+      {isClient && <TabBar activeTab={activeTab} onTabChange={handleTabChange} modelPaths={modelPaths} isMobile={isMobile} />}
+
+      {/* Fallback during SSR hydration */}
+      {!isClient && <TabBar activeTab={activeTab} onTabChange={handleTabChange} modelPaths={getModels()} isMobile={false} />}
 
       {/* Title below tab bar */}
       <div className="absolute top-28 left-8 z-0 max-w-[90%] sm:max-w-[100%] md:max-w-[100%]">
@@ -50,7 +104,7 @@ export default function Home() {
       <main className="flex-1 flex items-center justify-center">
         <div className="relative w-full max-w-4xl h-full mx-auto px-4">
           <Suspense fallback={null}>
-            <ModelViewerWithProgress modelPath={MODEL_PATHS[activeTab]} />
+            <ModelViewerWithProgress modelPath={modelPaths[activeTab]} />
           </Suspense>
 
           {/* Contact Us Button */}
