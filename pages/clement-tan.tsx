@@ -104,8 +104,8 @@ export default function ClementTanPage() {
     const vcfContent = `BEGIN:VCARD
 VERSION:3.0
 FN:KwongNgai - Clement Tan
-TEL;TYPE=CELL:+60122014698
-EMAIL:clmt.tan@yahoo.com
+TEL;TYPE=CELL:+60162014698
+EMAIL:liondancekwongngai@gmail.com
 END:VCARD`;
 
     // Create a blob and encode it as base64 for the data URI
@@ -217,7 +217,7 @@ END:VCARD`;
           >
             <div className="flex flex-row h-full">
               {/* Left side - Image */}
-              <div className={`w-1/2 flex items-center justify-center bg-black transition-all duration-500 ${
+              <div className={`w-2/5 flex items-center justify-center bg-black transition-all duration-500 ${
                 isShrunk ? 'p-0' : 'p-2 sm:p-3 md:p-4'
               }`}>
                 <img
@@ -230,7 +230,7 @@ END:VCARD`;
               </div>
 
               {/* Right side - Contact Info */}
-              <div className={`w-1/2 flex flex-col justify-center text-white transition-all duration-500 transition-opacity duration-200 ${
+              <div className={`w-3/5 flex flex-col justify-center text-white transition-all duration-500 transition-opacity duration-200 ${
                 hideDetails ? 'opacity-0' : 'opacity-100'
               } ${isShrunk ? 'p-0' : 'p-3 sm:p-4 md:p-6'}`}>
                 <h3
@@ -242,14 +242,14 @@ END:VCARD`;
 
                 {/* Titles */}
                 <div className="mb-2 sm:mb-3 md:mb-4 space-y-0.5">
-                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚全国龙狮总会 - 副会长</p>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚龙藝总会 - 副会长</p>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚布特拉再也龙狮总会 - 会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚光藝龙狮团 - 创办人兼团长</p>
                   <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">国际光藝龙狮团 - 创办人</p>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚光艺龙狮团 - 创办人兼团长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚全国龙狮总会 - 副会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚布特拉再也龙狮总会 - 会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚龙藝总会 - 副会长</p>
                 </div>
 
-                <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
+                <div className="space-y-0.5 sm:space-y-1 md:space-y-1.5">
                   <div className="flex items-center space-x-2 sm:space-x-2 md:space-x-3">
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -257,10 +257,18 @@ END:VCARD`;
                     <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm">+60 12-201 4698</p>
                   </div>
 
+                  <div className="flex items-center pl-[1.375rem] sm:pl-6 md:pl-8">
+                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm">+60 16-201 4698</p>
+                  </div>
+
                   <div className="flex items-center space-x-2 sm:space-x-2 md:space-x-3">
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
+                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">liondancekwongngai@gmail.com</p>
+                  </div>
+
+                  <div className="flex items-center pl-[1.375rem] sm:pl-6 md:pl-8">
                     <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">clmt.tan@yahoo.com</p>
                   </div>
 
@@ -307,7 +315,7 @@ END:VCARD`;
           </button>
 
           <a
-            href="mailto:clmt.tan@yahoo.com"
+            href="mailto:liondancekwongngai@gmail.com"
             className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 2 ? 1 : 0),
