@@ -34,6 +34,7 @@ export default function ClementTanPage() {
       setTimeout(() => setVisibleButtons(2), 2250),   // Second button
       setTimeout(() => setVisibleButtons(3), 2300),   // Third button
       setTimeout(() => setVisibleButtons(4), 2350),   // Fourth button
+      setTimeout(() => setVisibleButtons(5), 2400),   // Fifth button
     ];
 
     return () => {
@@ -284,7 +285,7 @@ END:VCARD`;
       {/* Sequential Buttons */}
       {showButtons && (
         <div
-          className={`w-full max-w-[600px] space-y-5 sm:space-y-3 md:space-y-5 transition-opacity duration-200 ${
+          className={`w-full max-w-[600px] space-y-2 sm:space-y-2 md:space-y-3 transition-opacity duration-200 ${
             hideButtons ? 'opacity-0 pointer-events-none' : 'opacity-100'
           } ${showQR ? 'absolute' : 'mt-4 sm:mt-6 md:mt-8'}`}
           style={showQR ? { top: 'calc(50% + ' + (isShrunk ? '275' : '175') + 'px)' } : {}}
@@ -306,13 +307,28 @@ END:VCARD`;
           </button>
 
           <a
+            href="mailto:clmt.tan@yahoo.com"
+            className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            style={{
+              opacity: hideButtons ? 0 : (visibleButtons >= 2 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 2 ? 'translateY(0)' : 'translateY(20px)'),
+              transition: 'all 0.3s ease-out',
+            }}
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Email</span>
+          </a>
+
+          <a
             href="https://wa.me/60122014698"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
-              opacity: hideButtons ? 0 : (visibleButtons >= 2 ? 1 : 0),
-              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 2 ? 'translateY(0)' : 'translateY(20px)'),
+              opacity: hideButtons ? 0 : (visibleButtons >= 3 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 3 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >
@@ -328,8 +344,8 @@ END:VCARD`;
             rel="noopener noreferrer"
             className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
-              opacity: hideButtons ? 0 : (visibleButtons >= 3 ? 1 : 0),
-              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 3 ? 'translateY(0)' : 'translateY(20px)'),
+              opacity: hideButtons ? 0 : (visibleButtons >= 4 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 4 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >
@@ -345,8 +361,8 @@ END:VCARD`;
             rel="noopener noreferrer"
             className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
-              opacity: hideButtons ? 0 : (visibleButtons >= 4 ? 1 : 0),
-              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 4 ? 'translateY(0)' : 'translateY(20px)'),
+              opacity: hideButtons ? 0 : (visibleButtons >= 5 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 5 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >

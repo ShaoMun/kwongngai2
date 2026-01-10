@@ -37,6 +37,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         setTimeout(() => setVisibleButtons(2), 2250),   // Second button
         setTimeout(() => setVisibleButtons(3), 2300),   // Third button
         setTimeout(() => setVisibleButtons(4), 2350),   // Fourth button
+        setTimeout(() => setVisibleButtons(5), 2400),   // Fifth button
       ];
 
       return () => {
@@ -101,8 +102,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'KwongNgai - Jason Tan',
-          text: 'Contact Jason Tan',
+          title: 'KwongNgai - Clement Tan',
+          text: 'Contact Clement Tan',
           url: window.location.href,
         });
       } catch (err) {
@@ -114,9 +115,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const saveVCF = () => {
     const vcfContent = `BEGIN:VCARD
 VERSION:3.0
-FN:KwongNgai - Jason Tan
-TEL;TYPE=CELL:+60123638359
-EMAIL:editour741@gmail.com
+FN:KwongNgai - Clement Tan
+TEL;TYPE=CELL:+60122014698
+EMAIL:clmt.tan@yahoo.com
 ADR;TYPE=HOME:;;139, Jalan Sri Ehsan 7, Taman Sri Ehsan\\, 52100 Kuala Lumpur\\, Selangor;;;;
 END:VCARD`;
 
@@ -210,8 +211,8 @@ END:VCARD`;
                 isShrunk ? 'p-0' : 'p-2 sm:p-3 md:p-4'
               }`}>
                 <img
-                  src="/jasontan.png"
-                  alt="Jason Tan"
+                  src="/clementtan.jpeg"
+                  alt="Clement Tan"
                   className={`w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 object-cover rounded-xl transition-opacity duration-200 ${
                     hideDetails ? 'opacity-0' : 'opacity-100'
                   }`}
@@ -223,30 +224,38 @@ END:VCARD`;
                 hideDetails ? 'opacity-0' : 'opacity-100'
               } ${isShrunk ? 'p-0' : 'p-3 sm:p-4 md:p-6'}`}>
                 <h3
-                  className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 md:mb-6 tracking-wider"
+                  className="text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2 md:mb-3 tracking-wider"
                   style={{ fontFamily: "'Alfa Slab One', cursive" }}
                 >
-                  Jason Tan
-                  <span className="block text-sm sm:text-base md:text-lg text-gray-400 font-normal">(陈总)</span>
+                  Clement Tan
                 </h3>
 
-                <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                {/* Titles */}
+                <div className="mb-2 sm:mb-3 md:mb-4 space-y-0.5">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚全国龙狮总会 - 副会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚龙藝总会 - 副会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚布特拉再也龙狮总会 - 会长</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">国际光藝龙狮团 - 创办人</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 leading-tight">马来西亚光艺龙狮团 - 创办人兼团长</p>
+                </div>
+
+                <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
                   <div className="flex items-center space-x-2 sm:space-x-2 md:space-x-3">
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm">+60 12-363 8359</p>
+                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm">+60 12-201 4698</p>
                   </div>
 
                   <div className="flex items-center space-x-2 sm:space-x-2 md:space-x-3">
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">editour741@gmail.com</p>
+                    <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm break-all">clmt.tan@yahoo.com</p>
                   </div>
 
                   <div className="flex items-start space-x-2 sm:space-x-2 md:space-x-3">
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -266,7 +275,7 @@ END:VCARD`;
       {/* Sequential Buttons */}
       {showButtons && (
         <div
-          className={`w-full max-w-[600px] space-y-5 sm:space-y-3 md:space-y-5 transition-opacity duration-200 ${
+          className={`w-full max-w-[600px] space-y-2 sm:space-y-2 md:space-y-3 transition-opacity duration-200 ${
             hideButtons ? 'opacity-0 pointer-events-none' : 'opacity-100'
           } ${showQR ? 'absolute' : 'mt-4 sm:mt-6 md:mt-8'}`}
           style={showQR ? { top: 'calc(50% + ' + (isShrunk ? '275' : '175') + 'px)' } : {}}
@@ -288,13 +297,28 @@ END:VCARD`;
           </button>
 
           <a
-            href="https://wa.me/60123638359"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:clmt.tan@yahoo.com"
             className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 2 ? 1 : 0),
               transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 2 ? 'translateY(0)' : 'translateY(20px)'),
+              transition: 'all 0.3s ease-out',
+            }}
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Email</span>
+          </a>
+
+          <a
+            href="https://wa.me/60122014698"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            style={{
+              opacity: hideButtons ? 0 : (visibleButtons >= 3 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 3 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >
@@ -310,8 +334,8 @@ END:VCARD`;
             rel="noopener noreferrer"
             className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
-              opacity: hideButtons ? 0 : (visibleButtons >= 3 ? 1 : 0),
-              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 3 ? 'translateY(0)' : 'translateY(20px)'),
+              opacity: hideButtons ? 0 : (visibleButtons >= 4 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 4 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >
@@ -327,8 +351,8 @@ END:VCARD`;
             rel="noopener noreferrer"
             className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
-              opacity: hideButtons ? 0 : (visibleButtons >= 4 ? 1 : 0),
-              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 4 ? 'translateY(0)' : 'translateY(20px)'),
+              opacity: hideButtons ? 0 : (visibleButtons >= 5 ? 1 : 0),
+              transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 5 ? 'translateY(0)' : 'translateY(20px)'),
               transition: 'all 0.3s ease-out',
             }}
           >
