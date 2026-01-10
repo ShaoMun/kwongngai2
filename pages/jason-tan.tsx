@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Head from 'next/head';
 import { QRCodeSVG } from 'qrcode.react';
 
-interface ContactModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
+export default function JasonTanPage() {
+  const router = useRouter();
   const [isFlipped, setIsFlipped] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -19,41 +17,31 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [visibleButtons, setVisibleButtons] = useState(0);
 
   useEffect(() => {
-    if (isOpen) {
-      // Start flipping after the card appears
-      const flipTimer = setTimeout(() => {
-        setIsFlipped(true);
-      }, 1200); // Flip starts at 1.2s
+    // Start flipping after the card appears
+    const flipTimer = setTimeout(() => {
+      setIsFlipped(true);
+    }, 1200); // Flip starts at 1.2s
 
-      // Flip duration is 1000ms, so it completes at 2200ms
-      // Start buttons appearing right after flip completes
-      const buttonsTimer = setTimeout(() => {
-        setShowButtons(true);
-      }, 2200); // 1.2s initial + 1s flip duration
+    // Flip duration is 1000ms, so it completes at 2200ms
+    // Start buttons appearing right after flip completes
+    const buttonsTimer = setTimeout(() => {
+      setShowButtons(true);
+    }, 2200); // 1.2s initial + 1s flip duration
 
-      // Gradually show buttons one by one, starting immediately after flip
-      const buttonStaggerTimers = [
-        setTimeout(() => setVisibleButtons(1), 2200),   // First button - right when flip completes
-        setTimeout(() => setVisibleButtons(2), 2250),   // Second button
-        setTimeout(() => setVisibleButtons(3), 2300),   // Third button
-        setTimeout(() => setVisibleButtons(4), 2350),   // Fourth button
-      ];
+    // Gradually show buttons one by one, starting immediately after flip
+    const buttonStaggerTimers = [
+      setTimeout(() => setVisibleButtons(1), 2200),   // First button - right when flip completes
+      setTimeout(() => setVisibleButtons(2), 2250),   // Second button
+      setTimeout(() => setVisibleButtons(3), 2300),   // Third button
+      setTimeout(() => setVisibleButtons(4), 2350),   // Fourth button
+    ];
 
-      return () => {
-        clearTimeout(flipTimer);
-        clearTimeout(buttonsTimer);
-        buttonStaggerTimers.forEach(timer => clearTimeout(timer));
-      };
-    } else {
-      setIsFlipped(false);
-      setShowButtons(false);
-      setShowQR(false);
-      setIsShrunk(false);
-      setHideButtons(false);
-      setHideDetails(false);
-      setVisibleButtons(0);
-    }
-  }, [isOpen]);
+    return () => {
+      clearTimeout(flipTimer);
+      clearTimeout(buttonsTimer);
+      buttonStaggerTimers.forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
   const handleDetailClick = () => {
     // Hide buttons immediately
@@ -83,7 +71,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     // Start expanding after details appear (200ms fade)
     setTimeout(() => {
       setIsShrunk(false);
-    },0);
+    }, 0);
 
     // Show buttons after expansion completes (500ms expand duration)
     setTimeout(() => {
@@ -131,20 +119,43 @@ END:VCARD`;
     reader.readAsDataURL(blob);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 py-8"
-      onClick={showQR ? handleBackToDetails : onClose}
-    >
-      {/* Close button */}
+    <>
+      <Head>
+        <title>KwongNgai - Jason Tan</title>
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://kwongngai.vercel.app/jason-tan" />
+        <meta property="og:title" content="KwongNgai - Jason Tan" />
+        <meta property="og:image" content="https://kwongngai.vercel.app/jasontan-card-back.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://kwongngai.vercel.app/jason-tan" />
+        <meta name="twitter:title" content="KwongNgai - Jason Tan" />
+        <meta name="twitter:image" content="https://kwongngai.vercel.app/jasontan-card-back.png" />
+      </Head>
+
+      <div className="min-h-screen w-full bg-white flex flex-col items-center justify-center py-8 relative overflow-hidden">
+      {/* Backdrop watermark */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+        <img
+          src="/logo-white.jpg"
+          alt="KWONG NGAI Watermark"
+          className="w-[80vw] h-[80vh] object-contain"
+        />
+      </div>
+
+      {/* Back button */}
       <button
-        onClick={showQR ? handleBackToDetails : onClose}
-        className="absolute top-6 right-6 z-50 w-10 h-10 flex items-center justify-center text-white hover:text-gray-300 transition-colors"
+        onClick={() => router.push('/')}
+        className="absolute top-6 left-6 z-50 w-10 h-10 flex items-center justify-center text-purple-900 hover:text-purple-700 transition-colors"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
       </button>
 
@@ -274,7 +285,7 @@ END:VCARD`;
         >
           <button
             onClick={saveVCF}
-            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 1 ? 1 : 0),
               transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 1 ? 'translateY(0)' : 'translateY(20px)'),
@@ -291,7 +302,7 @@ END:VCARD`;
             href="https://wa.me/60123638359"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 2 ? 1 : 0),
               transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 2 ? 'translateY(0)' : 'translateY(20px)'),
@@ -308,7 +319,7 @@ END:VCARD`;
             href="https://www.instagram.com/kwong_ngai_malaysia/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 3 ? 1 : 0),
               transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 3 ? 'translateY(0)' : 'translateY(20px)'),
@@ -325,7 +336,7 @@ END:VCARD`;
             href="https://www.facebook.com/Kwongngailiondance/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 sm:py-2.5 md:py-3 bg-gray-200 text-black rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
+            className="w-full py-3 sm:py-3.5 md:py-4 bg-purple-300 text-black rounded-xl font-semibold hover:bg-purple-400 transition-all flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm md:text-base"
             style={{
               opacity: hideButtons ? 0 : (visibleButtons >= 4 ? 1 : 0),
               transform: hideButtons ? 'translateY(-10px)' : (visibleButtons >= 4 ? 'translateY(0)' : 'translateY(20px)'),
@@ -443,5 +454,6 @@ END:VCARD`;
         }
       `}</style>
     </div>
+    </>
   );
 }
